@@ -8,9 +8,12 @@
 </head>
 <body>
     <div class="main">
-        <div class="block">
+        <span class="login">
+            <a href="{% url 'login' %}">Login</a>
+        </span>
+        <div class="main_block">
             <h1>free_quiz!</h1>
-            <a href="#">Make quiz!</a>
+            <a href="{% url 'create' %}">Make quiz!</a>
         </div>
     </div>
 </body>
