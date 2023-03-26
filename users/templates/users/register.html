@@ -1,12 +1,16 @@
+{% load crispy_forms_filters %}
 {% load crispy_forms_tags %}
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Register</title>
+    <title>Registration</title>
+    <link type="text/css" href="{% static 'users/css/style.css' %}" rel="stylesheet">
 </head>
 <body>
-<div class="content-section">
+<div class="container">
+    <div class="content-section">
         <form method="POST">
             {% csrf_token %}
             <fieldset class="form-group">
@@ -14,14 +18,15 @@
                 {{ form|crispy }}
             </fieldset>
             <div class="form-group">
-                <button class="btn btn-outline-info" type="submit">Регистрация</button>
+                <button class="btn btn-outline-info" type="submit">Registration</button>
             </div>
         </form>
         <div class="border-top pt-3">
             <small class="text-muted">
-                Уже есть аккаунт? <a class="ml-2" href="#">Вход</a>
+                 Already have an account?<a class="ml-2" href="#">Login</a>
             </small>
         </div>
     </div>
+</div>
 </body>
 </html>
