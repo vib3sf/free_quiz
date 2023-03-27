@@ -1,3 +1,4 @@
+import django.contrib.auth as log
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from .forms import UserRegisterForm
@@ -16,13 +17,10 @@ def register(request):
     return render(request, 'users/register.html', {'form': form})
 
 
-def login(request):
-    return render(request, 'users/login.html')
+def profile(request):
+    return render(request, 'users/profile.html')
 
 
 def logout(request):
-    return render(request, 'users/logout.html')
-
-
-def profile(request):
-    return render(request, 'users/profile.html')
+    log.logout(request)
+    return redirect('home')

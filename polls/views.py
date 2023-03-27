@@ -2,11 +2,7 @@ from django.shortcuts import render
 
 
 def index(request):
-    return render(request, "polls/base.html")
-
-
-def login(request):
-    return render(request, "polls/login.html")
+    return render(request, "polls/home.html")
 
 
 def create_quest(request):

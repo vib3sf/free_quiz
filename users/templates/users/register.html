@@ -1,14 +1,8 @@
+{% extends "polls/base.html" %}
 {% load crispy_forms_filters %}
 {% load crispy_forms_tags %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Registration</title>
-    <link type="text/css" href="{% static 'polls/css/style.css' %}" rel="stylesheet">
-</head>
-<body>
+{% block content %}
 <div class="container">
     <div class="content-section">
         <form method="POST">
@@ -28,5 +22,4 @@
         </div>
     </div>
 </div>
-</body>
-</html>
+{% endblock content %}
