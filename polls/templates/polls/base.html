@@ -1,0 +1,33 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>free_quiz!</title>
+    <link type="text/css" href="{% static 'polls/css/style.css' %}" rel="stylesheet">
+</head>
+<body>
+<header class="site-header">
+    <nav>
+        <div class="navbar-nav">
+          {% if user.is_authenticated %}
+            <a class="nav-item nav-link" href="{% url 'logout' %}">Выход</a>
+            <a class="nav-item nav-link" href="{% url 'profile' 3 %}">Профиль</a>
+          {% else %}
+            <a class="nav-item nav-link" href="{% url 'login' %}">Вход</a>
+            <a class="nav-item nav-link" href="{% url 'register' %}">Регистрация</a>
+          {% endif %}
+        </div>
+    </nav>
+</header>
+    <div class="container">
+        <div class="main_menu">
+            <h1>free_quiz!</h1>
+            <a href="{% url 'create' %}">Make quiz!</a>
+        </div>
+    </div>
+<footer class="foot">
+    <p>© 2023 Hruzheuski Uladzislau</p>
+</footer>
+</body>
+</html>
