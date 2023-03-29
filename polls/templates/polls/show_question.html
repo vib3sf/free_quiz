@@ -1,0 +1,9 @@
+{% extends "polls/base.html" %}
+{% block content %}
+    <h2>{{ question }} </h2>
+    <ol>
+        {% for choice in choices %}
+            <li>{{ choice }}</li>
+        {% endfor %}
+    </ol>
+{% endblock %}
