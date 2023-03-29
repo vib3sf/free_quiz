@@ -1,11 +1,16 @@
 from django.contrib.auth.models import User
 from django.db import models
+from django.urls import reverse
 
 
 class Question(models.Model):
     question_text = models.CharField(max_length=200)
     creator = models.ForeignKey(User, on_delete=models.CASCADE)
-    pub_date = models.DateTimeField()
+    pub_date = models.DateTimeField(auto_now_add=True)
+    slug = models.SlugField(unique=False, db_index=True, default=question_text)
+
+    def get_absolute_url(self):
+        return reverse('show_question', kwargs={'post_slug': self.slug, 'id': self.pk})
 
     def __str__(self):
         return self.question_text
