@@ -1,4 +1,3 @@
-from django.forms import formset_factory
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from django.template.defaultfilters import slugify
@@ -11,29 +10,40 @@ def index(request):
 
 @login_required
 def create_question(request):
-    choice_form_set = formset_factory(ChoiceAddForm, extra=2)
     if request.method == 'POST':
-        formset = choice_form_set(request.POST)
         question_form = QuestionAddForm(request.POST)
-        if question_form.is_valid() and formset.is_valid():
+        if question_form.is_valid():
             question = question_form.save(commit=False)
             question.creator_id = request.user.id
             question.slug = slugify(question.question_text)
             question.save()
-            for form in formset:
-                choice = form.save(commit=False)
-                choice.question_id = question.id
-                choice.save()
-            return redirect('home')
+            return redirect('show_question', question.id, question.slug)
     else:
         question_form = QuestionAddForm()
-        formset = choice_form_set()
+        formset = ChoiceFormSet()
 
     context = {
         'question_form': question_form,
-        'choices_forms': formset,
     }
     return render(request, 'polls/create_question.html', context)
+
+
+def create_choice(request, question_id):
+    question = get_object_or_404(Question, id=question_id)
+    if request.method == "POST":
+        form = ChoiceAddForm(request.POST)
+        if form.is_valid():
+            choice = form.save(commit=False)
+            choice.question_id = question.id
+            choice.save()
+            print("I'm here")
+            return redirect('show_question', question.id, question.slug)
+
+    form = ChoiceAddForm()
+    context = {
+        "form": form
+    }
+    return render(request, "polls/create_choice.html", context)
 
 
 def show_question(request, question_id, question_slug):

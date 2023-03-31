@@ -5,7 +5,7 @@
     <div class="content-section">
         <form class="form-horizontal" method="POST" action="">
             {% csrf_token %}
-            {{ question_form }}
+            {{ form }}
         <div class="row spacer">
             <div class="col-4 offset-2">
                 <button type="submit" class="btn btn-block btn-primary">Create</button>

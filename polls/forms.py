@@ -17,5 +17,9 @@ class ChoiceAddForm(forms.ModelForm):
         model = Choice
         fields = ['choice_text']
         widgets = {
-            'choice_text': forms.TextInput(attrs={'class': 'form-control', })
+            'class': 'form-control',
+            'placeholder': 'Enter choice text'
         }
+
+
+ChoiceFormSet = forms.formset_factory(ChoiceAddForm, extra=2)
