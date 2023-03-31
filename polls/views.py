@@ -28,7 +28,7 @@ def create_question(request):
     return render(request, 'polls/create_question.html', context)
 
 
-def create_choice(request, question_id):
+def add_choice(request, question_id):
     question = get_object_or_404(Question, id=question_id)
     if request.method == "POST":
         form = ChoiceAddForm(request.POST)
@@ -44,6 +44,13 @@ def create_choice(request, question_id):
         "form": form
     }
     return render(request, "polls/create_choice.html", context)
+
+
+def delete_choice(request, choice_id):
+    choice = get_object_or_404(Choice, id=choice_id)
+    question = choice.question
+    choice.delete()
+    return redirect('show_question', question.id, question.slug)
 
 
 def show_question(request, question_id, question_slug):

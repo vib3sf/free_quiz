@@ -6,10 +6,13 @@
         {{ question }}
         <ul>
             {% for choice in choices %}
-                <li>{{ choice }}</li>
+                <li>
+                    {{ choice }}
+                    <a href="{% url 'delete_choice' choice.id%}">delete</a>
+                </li>
             {% endfor %}
         </ul>
+        <a href="{% url 'create_choice' question.id %}">Add choice</a>
     </div>
-    <a href="{% url 'create_choice' question.id %}">Add choice</a>
 </div>
 {% endblock content %}
