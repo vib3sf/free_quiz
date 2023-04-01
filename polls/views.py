@@ -17,7 +17,7 @@ def create_question(request):
             question.creator_id = request.user.id
             question.slug = slugify(question.question_text)
             question.save()
-            return redirect('show_question', question.id, question.slug)
+            return redirect('show_question', question.id)
     else:
         question_form = QuestionAddForm()
         formset = ChoiceFormSet()
@@ -37,7 +37,7 @@ def add_choice(request, question_id):
             choice.question_id = question.id
             choice.save()
             print("I'm here")
-            return redirect('show_question', question.id, question.slug)
+            return redirect('show_question', question.id)
 
     form = ChoiceAddForm()
     context = {
@@ -50,10 +50,10 @@ def delete_choice(request, choice_id):
     choice = get_object_or_404(Choice, id=choice_id)
     question = choice.question
     choice.delete()
-    return redirect('show_question', question.id, question.slug)
+    return redirect('show_question', question.id)
 
 
-def show_question(request, question_id, question_slug):
+def show_question(request, question_id):
     question = get_object_or_404(Question, id=question_id)
     choices = question.choice_set.all()
     context = {
