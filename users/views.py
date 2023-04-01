@@ -18,7 +18,10 @@ def register(request):
 
 
 def profile(request):
-    return render(request, 'users/profile.html')
+    context = {
+        'questions': request.user.question_set.all(),
+    }
+    return render(request, 'users/profile.html', context)
 
 
 def logout(request):

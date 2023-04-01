@@ -9,7 +9,7 @@ class Question(models.Model):
     pub_date = models.DateTimeField(auto_now_add=True)
 
     def get_absolute_url(self):
-        return reverse('show_question', kwargs={'id': self.pk})
+        return f'/question/{self.id}/'
 
     def __str__(self):
         return self.question_text
@@ -25,7 +25,7 @@ class Choice(models.Model):
         for choice in self.question.choice_set.all():
             count_votes += len(choice.vote_set.all())
         if count_votes == 0:
-            return 'no votes'
+            return ''
         return f'{len(self.vote_set.all()) / count_votes * 100:.2f} %'
 
     def __str__(self):
