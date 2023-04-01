@@ -12,7 +12,7 @@ class QuestionAddForm(forms.ModelForm):
         }
 
 
-class ChoiceAddForm(forms.ModelForm):
+class ChoiceForm(forms.ModelForm):
     class Meta:
         model = Choice
         fields = ['choice_text']
@@ -22,4 +22,4 @@ class ChoiceAddForm(forms.ModelForm):
         }
 
 
-ChoiceFormSet = forms.formset_factory(ChoiceAddForm, extra=2)
+ChoiceFormSet = forms.formset_factory(ChoiceForm, extra=2)

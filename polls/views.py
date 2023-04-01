@@ -29,17 +29,16 @@ def create_question(request):
 
 
 def add_choice(request, question_id):
-    question = get_object_or_404(Question, id=question_id)
     if request.method == "POST":
-        form = ChoiceAddForm(request.POST)
+        form = ChoiceForm(request.POST)
+        question = get_object_or_404(Question, id=question_id)
         if form.is_valid():
             choice = form.save(commit=False)
             choice.question_id = question.id
             choice.save()
-            print("I'm here")
             return redirect('show_question', question.id)
 
-    form = ChoiceAddForm()
+    form = ChoiceForm()
     context = {
         "form": form
     }
@@ -51,6 +50,21 @@ def delete_choice(request, choice_id):
     question = choice.question
     choice.delete()
     return redirect('show_question', question.id)
+
+
+def edit_choice(request, choice_id):
+    if request.method == 'POST':
+        form = ChoiceForm(request.POST)
+        choice = get_object_or_404(Choice, id=choice_id)
+        if form.is_valid():
+            choice.choice_text = form.cleaned_data['choice_text']
+            choice.save()
+            return redirect('show_question', choice.question_id)
+    form = ChoiceForm()
+    context = {
+        "form": form
+    }
+    return render(request, "polls/create_choice.html", context)
 
 
 def show_question(request, question_id):

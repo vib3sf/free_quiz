@@ -9,6 +9,7 @@
                 <li>
                     {{ choice }}
                     <a href="{% url 'delete_choice' choice.id%}">delete</a>
+                    <a href="{% url 'edit_choice' choice.id%}">edit</a>
                 </li>
             {% endfor %}
         </ul>
