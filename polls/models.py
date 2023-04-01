@@ -19,6 +19,15 @@ class Choice(models.Model):
     choice_text = models.CharField(max_length=100)
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
 
+    @property
+    def get_percent(self):
+        count_votes = 0
+        for choice in self.question.choice_set.all():
+            count_votes += len(choice.vote_set.all())
+        if count_votes == 0:
+            return 'no votes'
+        return len(self.vote_set.all()) / count_votes * 100
+
     def __str__(self):
         return self.choice_text
 
