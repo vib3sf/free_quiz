@@ -26,7 +26,7 @@ class Choice(models.Model):
             count_votes += len(choice.vote_set.all())
         if count_votes == 0:
             return 'no votes'
-        return len(self.vote_set.all()) / count_votes * 100
+        return f'{len(self.vote_set.all()) / count_votes * 100:.2f} %'
 
     def __str__(self):
         return self.choice_text
