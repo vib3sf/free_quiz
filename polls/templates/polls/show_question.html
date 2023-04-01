@@ -11,6 +11,7 @@
                     {{ choice }}
                     <a href="{% url 'delete_choice' choice.id%}">delete</a>
                     <a href="{% url 'edit_choice' choice.id%}">edit</a>
+                    <a href="{% url 'vote' choice.id%}">vote</a>
                 </li>
             {% endfor %}
         </ul>

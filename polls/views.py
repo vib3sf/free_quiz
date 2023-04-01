@@ -1,6 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from .forms import *
+from .models import *
 
 
 def index(request):
@@ -20,7 +21,7 @@ def create_question(request):
         question_form = QuestionForm()
 
     context = {
-        'question_form': question_form,
+        'form': question_form,
     }
     return render(request, 'polls/create_or_edit_question.html', context)
 
@@ -89,5 +90,14 @@ def edit_choice(request, choice_id):
     return render(request, "polls/create_or_edit_choice.html", context)
 
 
-
-
+@login_required
+def vote(request, choice_id):
+    choice = get_object_or_404(Choice, id=choice_id)
+    for v in Vote.objects.all():
+        if v.voter == request.user and v.choice.question == choice.question:
+            v.choice = choice
+            v.save()
+            break
+    else:
+        Vote(voter=request.user, choice=choice).save()
+    return redirect('show_question', choice.question_id)
