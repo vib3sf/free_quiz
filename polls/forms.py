@@ -2,13 +2,11 @@ from django import forms
 from .models import *
 
 
-class QuestionAddForm(forms.ModelForm):
-
+class QuestionForm(forms.ModelForm):
     class Meta:
         model = Question
         fields = ['question_text']
         widgets = {
-            'text': forms.Textarea(attrs={'class': 'form-control', 'rows': 5, 'cols': 20}),
         }
 
 
@@ -20,6 +18,3 @@ class ChoiceForm(forms.ModelForm):
             'class': 'form-control',
             'placeholder': 'Enter choice text'
         }
-
-
-ChoiceFormSet = forms.formset_factory(ChoiceForm, extra=2)
