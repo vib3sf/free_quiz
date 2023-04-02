@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required
 import django.contrib.auth as log
 from django.shortcuts import render, redirect
 from django.contrib import messages
@@ -17,6 +18,7 @@ def register(request):
     return render(request, 'users/register.html', {'form': form})
 
 
+@login_required
 def profile(request):
     context = {
         'polls': request.user.poll_set.all(),
@@ -24,6 +26,7 @@ def profile(request):
     return render(request, 'users/profile.html', context)
 
 
+@login_required
 def logout(request):
     log.logout(request)
     return redirect('home')

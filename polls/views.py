@@ -56,6 +56,7 @@ def create_question(request, poll_id):
     return render(request, 'polls/create_or_edit_question.html', context)
 
 
+@login_required
 def edit_question(request, question_id):
     if request.method == 'POST':
         form = QuestionForm(request.POST)
@@ -71,12 +72,14 @@ def edit_question(request, question_id):
     return render(request, "polls/create_or_edit_question.html", context)
 
 
+@login_required
 def delete_question(request, question_id):
     question = get_object_or_404(Question, id=question_id)
     question.delete()
     return redirect('show_poll', question.poll_id)
 
 
+@login_required
 def add_choice(request, question_id):
     if request.method == "POST":
         form = ChoiceForm(request.POST)
@@ -93,6 +96,7 @@ def add_choice(request, question_id):
     return render(request, "polls/create_or_edit_choice.html", context)
 
 
+@login_required
 def edit_choice(request, choice_id):
     if request.method == 'POST':
         form = ChoiceForm(request.POST)
@@ -108,6 +112,7 @@ def edit_choice(request, choice_id):
     return render(request, "polls/create_or_edit_choice.html", context)
 
 
+@login_required
 def delete_choice(request, choice_id):
     choice = get_object_or_404(Choice, id=choice_id)
     choice.delete()
