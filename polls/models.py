@@ -8,7 +8,7 @@ class Poll(models.Model):
     pub_date = models.DateTimeField(auto_now_add=True)
 
     def get_absolute_url(self):
-        return f'/poll/{self.id}'
+        return f'poll/{self.id}'
 
     def __str__(self):
         return self.poll_text
@@ -16,11 +16,7 @@ class Poll(models.Model):
 
 class Question(models.Model):
     question_text = models.CharField(max_length=200)
-    creator = models.ForeignKey(User, on_delete=models.CASCADE)
-    pub_date = models.DateTimeField(auto_now_add=True)
-
-    def get_absolute_url(self):
-        return f'/question/{self.id}/'
+    poll = models.ForeignKey(Poll, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.question_text

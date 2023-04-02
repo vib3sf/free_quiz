@@ -2,6 +2,14 @@ from django import forms
 from .models import *
 
 
+class PollForm(forms.ModelForm):
+    class Meta:
+        model = Poll
+        fields = ['poll_text']
+        widgets = {
+        }
+
+
 class QuestionForm(forms.ModelForm):
     class Meta:
         model = Question

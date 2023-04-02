@@ -19,7 +19,7 @@ def register(request):
 
 def profile(request):
     context = {
-        'questions': request.user.question_set.all(),
+        'questions': request.user.poll_set.all(),
     }
     return render(request, 'users/profile.html', context)
 
