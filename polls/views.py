@@ -41,17 +41,15 @@ def show_poll(request, poll_id):
 @login_required
 def create_question(request, poll_id):
     if request.method == 'POST':
-        question_form = QuestionForm(request.POST)
-        if question_form.is_valid():
-            question = question_form.save(commit=False)
+        form = QuestionForm(request.POST)
+        if form.is_valid():
+            question = form.save(commit=False)
             question.poll_id = poll_id
             question.save()
             return redirect('show_poll', poll_id)
-    else:
-        question_form = QuestionForm()
-
+    form = QuestionForm()
     context = {
-        'form': question_form,
+        'form': form,
     }
     return render(request, 'polls/create_or_edit_question.html', context)
 
@@ -121,12 +119,7 @@ def delete_choice(request, choice_id):
 
 @login_required
 def vote(request, choice_id):
-    choice = get_object_or_404(Choice, id=choice_id)
-    for v in Vote.objects.all():
-        if v.voter == request.user and v.choice.question == choice.question:
-            v.choice = choice
-            v.save()
-            break
-    else:
-        Vote(voter=request.user, choice=choice).save()
+choice = get_object_or_404(Choice, id=choice_id)
+    Vote.objects.filter(choice__question=choice.question, voter=request.user).update_or_create(
+        voter=request.user, defaults={'choice': choice})
     return redirect('show_poll', choice.question.poll_id)

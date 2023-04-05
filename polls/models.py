@@ -30,10 +30,8 @@ class Choice(models.Model):
     def get_percent(self):
         count_votes = 0
         for choice in self.question.choice_set.all():
-            count_votes += len(choice.vote_set.all())
-        if count_votes == 0:
-            return ''
-        return f'{len(self.vote_set.all()) / count_votes * 100:.2f} %'
+            count_votes += choice.vote_set.count()
+        return f'{self.vote_set.count() / count_votes * 100:.2f} %' if count_votes != 0 else ''
 
     def __str__(self):
         return self.choice_text
