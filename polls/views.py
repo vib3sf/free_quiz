@@ -119,7 +119,7 @@ def delete_choice(request, choice_id):
 
 @login_required
 def vote(request, choice_id):
-choice = get_object_or_404(Choice, id=choice_id)
+    choice = get_object_or_404(Choice, id=choice_id)
     Vote.objects.filter(choice__question=choice.question, voter=request.user).update_or_create(
         voter=request.user, defaults={'choice': choice})
     return redirect('show_poll', choice.question.poll_id)

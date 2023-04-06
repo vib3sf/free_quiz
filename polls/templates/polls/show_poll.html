@@ -23,9 +23,13 @@
                     </li>
                 {% endfor %}
             </ul>
-            <a href="{% url 'create_choice' question.id %}">Add choice</a>
+            {% if user == poll.creator %}
+                <a href="{% url 'create_choice' question.id %}">Add choice</a>
+            {% endif %}
         {% endfor %}
-        <a href="{% url 'create_question' poll.id %}">Add question</a>
+        {% if user == poll.creator %}
+            <a href="{% url 'create_question' poll.id %}">Add question</a>
+        {% endif %}
     </div>
 </div>
 {% endblock content %}

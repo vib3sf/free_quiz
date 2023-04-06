@@ -28,9 +28,7 @@ class Choice(models.Model):
 
     @property
     def get_percent(self):
-        count_votes = 0
-        for choice in self.question.choice_set.all():
-            count_votes += choice.vote_set.count()
+        count_votes = Vote.objects.filter(choice__question=self.question).count()
         return f'{self.vote_set.count() / count_votes * 100:.2f} %' if count_votes != 0 else ''
 
     def __str__(self):
