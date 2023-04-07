@@ -12,22 +12,14 @@ def index(request):
     return render(request, "polls/home.html")
 
 
-@login_required
-def create_poll(request):
-    if request.method == 'POST':
-        poll_form = PollForm(request.POST)
-        if poll_form.is_valid():
-            poll = poll_form.save(commit=False)
-            poll.creator_id = request.user.id
-            poll.save()
-            return redirect('show_poll', poll.id)
-    else:
-        poll_form = PollForm()
+class CreatePoll(CreateView):
+    form_class = PollForm
+    model = Poll
+    template_name = 'polls/create_or_edit_poll.html'
 
-    context = {
-        'poll_form': poll_form,
-    }
-    return render(request, 'polls/create_or_edit_poll.html', context)
+    def form_valid(self, form):
+        form.instance.creator = self.request.user
+        return super().form_valid(form)
 
 
 class ShowPoll(DetailView):
@@ -71,21 +63,17 @@ def delete_question(request, question_id):
     return redirect('show_poll', question.poll_id)
 
 
-@login_required
-def add_choice(request, question_id):
-    if request.method == "POST":
-        form = ChoiceForm(request.POST)
-        if form.is_valid():
-            choice = form.save(commit=False)
-            choice.question_id = question_id
-            choice.save()
-            return redirect('show_poll', get_object_or_404(Question, id=question_id).poll_id)
+class CreateChoice(CreateView):
+    form_class = ChoiceForm
+    template_name = 'polls/create_or_edit_choice.html'
 
-    form = ChoiceForm()
-    context = {
-        "form": form
-    }
-    return render(request, "polls/create_or_edit_choice.html", context)
+    def get_success_url(self):
+        return reverse('show_poll',
+                       kwargs={'poll_id': get_object_or_404(Question, id=self.kwargs['question_id']).poll_id})
+
+    def form_valid(self, form):
+        form.instance.question_id = self.kwargs['question_id']
+        return super().form_valid(form)
 
 
 @login_required
