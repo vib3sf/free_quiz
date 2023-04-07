@@ -1,14 +1,15 @@
 from django.contrib.auth.decorators import login_required
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.detail import DetailView
-from django.shortcuts import render, redirect, get_object_or_404
+from django.views.generic import TemplateView
+from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse
 from .forms import *
 from .models import *
 
 
-def index(request):
-    return render(request, "polls/home.html")
+class Home(TemplateView):
+    template_name = 'polls/home.html'
 
 
 class CreatePoll(CreateView):
