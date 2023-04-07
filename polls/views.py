@@ -1,5 +1,5 @@
 from django.contrib.auth.decorators import login_required
-from django.views.generic.edit import CreateView, UpdateView
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.detail import DetailView
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
@@ -23,6 +23,16 @@ class CreatePoll(CreateView):
 class EditPoll(UpdateView):
     form_class = PollForm
     template_name = 'polls/create_or_edit_poll.html'
+
+    def get_object(self, queryset=None):
+        return get_object_or_404(Poll, id=self.kwargs['poll_id'])
+
+
+class DeletePoll(DeleteView):
+    template_name = 'polls/confirm_delete.html'
+
+    def get_success_url(self):
+        return reverse('home')
 
     def get_object(self, queryset=None):
         return get_object_or_404(Poll, id=self.kwargs['poll_id'])
@@ -57,11 +67,14 @@ class EditQuestion(UpdateView):
         return get_object_or_404(Question, id=self.kwargs['question_id'])
 
 
-@login_required
-def delete_question(request, question_id):
-    question = get_object_or_404(Question, id=question_id)
-    question.delete()
-    return redirect('show_poll', question.poll_id)
+class DeleteQuestion(DeleteView):
+    template_name = 'polls/confirm_delete.html'
+
+    def get_success_url(self):
+        return reverse('show_poll', kwargs={'poll_id': self.get_object().poll_id})
+
+    def get_object(self, queryset=None):
+        return get_object_or_404(Question, id=self.kwargs['question_id'])
 
 
 class CreateChoice(CreateView):
@@ -88,11 +101,14 @@ class EditChoice(UpdateView):
         return get_object_or_404(Choice, id=self.kwargs['choice_id'])
 
 
-@login_required
-def delete_choice(request, choice_id):
-    choice = get_object_or_404(Choice, id=choice_id)
-    choice.delete()
-    return redirect('show_poll', choice.question.poll_id)
+class DeleteChoice(DeleteView):
+    template_name = 'polls/confirm_delete.html'
+
+    def get_success_url(self):
+        return reverse('show_poll', kwargs={'poll_id': self.get_object().question.poll_id})
+
+    def get_object(self, queryset=None):
+        return get_object_or_404(Choice, id=self.kwargs['choice_id'])
 
 
 @login_required

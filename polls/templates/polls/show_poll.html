@@ -4,7 +4,12 @@
 <div class="container">
     <div class="content-section">
         <h2> {{ poll }}</h2>
-        <a href="{% url 'edit_poll' poll.id %}">edit</a>
+        <p>
+            {% if user == poll.creator %}
+                <a href="{% url 'edit_poll' poll.id %}">edit</a>
+                <a href="{% url 'delete_poll' poll.id %}">delete</a>
+            {% endif %}
+        </p>
         {% for question in poll.question_set.all %}
             <p>{{ question }}</p>
             {% if user == poll.creator %}
