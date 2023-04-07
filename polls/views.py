@@ -1,5 +1,9 @@
 from django.contrib.auth.decorators import login_required
+from django.views.generic.edit import CreateView
+from django.views.generic.list import ListView
+from django.views.generic.detail import DetailView
 from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse
 from .forms import *
 from .models import *
 
@@ -26,32 +30,22 @@ def create_poll(request):
     return render(request, 'polls/create_or_edit_poll.html', context)
 
 
-def show_poll(request, poll_id):
-    poll = get_object_or_404(Poll, id=poll_id)
-    questions = poll.question_set.all()
-    choices = {}
-    for question in questions:
-        choices[question] = question.choice_set.all()
-    context = {
-        'poll': poll,
-    }
-    return render(request, 'polls/show_poll.html', context)
+class ShowPoll(DetailView):
+    model = Poll
+    template_name = 'polls/show_poll.html'
+    pk_url_kwarg = 'poll_id'
 
 
-@login_required
-def create_question(request, poll_id):
-    if request.method == 'POST':
-        form = QuestionForm(request.POST)
-        if form.is_valid():
-            question = form.save(commit=False)
-            question.poll_id = poll_id
-            question.save()
-            return redirect('show_poll', poll_id)
-    form = QuestionForm()
-    context = {
-        'form': form,
-    }
-    return render(request, 'polls/create_or_edit_question.html', context)
+class CreateQuestion(CreateView):
+    form_class = QuestionForm
+    template_name = 'polls/create_or_edit_question.html'
+
+    def get_success_url(self):
+        return reverse('show_poll', kwargs={'poll_id': self.kwargs['poll_id']})
+
+    def form_valid(self, form):
+        form.instance.poll_id = self.kwargs['poll_id']
+        return super().form_valid(form)
 
 
 @login_required
