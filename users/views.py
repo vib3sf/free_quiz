@@ -1,12 +1,14 @@
 from polls.models import Poll
 from django.contrib.auth.decorators import login_required
 from django.views.generic.edit import CreateView
-from django.views.generic.list import ListView
+from django.utils.decorators import method_decorator
+from django.views.generic import TemplateView
 import django.contrib.auth as log
-from django.shortcuts import render, redirect, reverse
+from django.shortcuts import redirect, reverse
 from .forms import UserRegisterForm
 
 
+@method_decorator(login_required, name="dispatch")
 class Register(CreateView):
     form_class = UserRegisterForm
     template_name = 'users/register.html'
@@ -15,7 +17,8 @@ class Register(CreateView):
         return reverse('home')
 
 
-class Profile(ListView):
+@method_decorator(login_required, name="dispatch")
+class Profile(TemplateView):
     template_name = "users/profile.html"
     model = Poll
 

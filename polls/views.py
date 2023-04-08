@@ -1,4 +1,5 @@
 from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.detail import DetailView
 from django.views.generic import TemplateView
@@ -8,10 +9,12 @@ from .forms import *
 from .models import *
 
 
+@method_decorator(login_required, name="dispatch")
 class Home(TemplateView):
     template_name = 'polls/home.html'
 
 
+@method_decorator(login_required, name="dispatch")
 class CreatePoll(CreateView):
     form_class = PollForm
     template_name = 'polls/create_or_edit_poll.html'
@@ -21,6 +24,7 @@ class CreatePoll(CreateView):
         return super().form_valid(form)
 
 
+@method_decorator(login_required, name="dispatch")
 class EditPoll(UpdateView):
     form_class = PollForm
     template_name = 'polls/create_or_edit_poll.html'
@@ -29,6 +33,7 @@ class EditPoll(UpdateView):
         return get_object_or_404(Poll, id=self.kwargs['poll_id'])
 
 
+@method_decorator(login_required, name="dispatch")
 class DeletePoll(DeleteView):
     template_name = 'polls/confirm_delete.html'
 
@@ -39,12 +44,14 @@ class DeletePoll(DeleteView):
         return get_object_or_404(Poll, id=self.kwargs['poll_id'])
 
 
+@method_decorator(login_required, name="dispatch")
 class ShowPoll(DetailView):
     model = Poll
     template_name = 'polls/show_poll.html'
     pk_url_kwarg = 'poll_id'
 
 
+@method_decorator(login_required, name="dispatch")
 class CreateQuestion(CreateView):
     form_class = QuestionForm
     template_name = 'polls/create_or_edit_question.html'
@@ -57,6 +64,7 @@ class CreateQuestion(CreateView):
         return super().form_valid(form)
 
 
+@method_decorator(login_required, name="dispatch")
 class EditQuestion(UpdateView):
     form_class = QuestionForm
     template_name = 'polls/create_or_edit_question.html'
@@ -68,6 +76,7 @@ class EditQuestion(UpdateView):
         return get_object_or_404(Question, id=self.kwargs['question_id'])
 
 
+@method_decorator(login_required, name="dispatch")
 class DeleteQuestion(DeleteView):
     template_name = 'polls/confirm_delete.html'
 
@@ -78,6 +87,7 @@ class DeleteQuestion(DeleteView):
         return get_object_or_404(Question, id=self.kwargs['question_id'])
 
 
+@method_decorator(login_required, name="dispatch")
 class CreateChoice(CreateView):
     form_class = ChoiceForm
     template_name = 'polls/create_or_edit_choice.html'
@@ -91,6 +101,7 @@ class CreateChoice(CreateView):
         return super().form_valid(form)
 
 
+@method_decorator(login_required, name="dispatch")
 class EditChoice(UpdateView):
     form_class = ChoiceForm
     template_name = 'polls/create_or_edit_question.html'
@@ -102,6 +113,7 @@ class EditChoice(UpdateView):
         return get_object_or_404(Choice, id=self.kwargs['choice_id'])
 
 
+@method_decorator(login_required, name="dispatch")
 class DeleteChoice(DeleteView):
     template_name = 'polls/confirm_delete.html'
 
