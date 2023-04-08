@@ -2,7 +2,10 @@
 {% block content %}
     <p> {{ user.username }}</p>
     <p> {{ user.email }}</p>
-    {% for poll in polls %}
+    {% for poll in user_polls %}
+        <a href="{{ poll.get_absolute_url }}">{{ poll }}</a>
+    {% endfor %}
+    {% for poll in completed_polls %}
         <a href="{{ poll.get_absolute_url }}">{{ poll }}</a>
     {% endfor %}
 {% endblock content %}
