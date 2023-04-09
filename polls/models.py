@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.db import models
+from django.urls import reverse
 
 
 class Poll(models.Model):
@@ -8,7 +9,7 @@ class Poll(models.Model):
     pub_date = models.DateTimeField(auto_now_add=True)
 
     def get_absolute_url(self):
-        return f'/poll/{self.id}'
+        return reverse('show_poll', kwargs={'poll_id': self.id})
 
     def __str__(self):
         return self.poll_text

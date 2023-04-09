@@ -1,12 +1,12 @@
 from django.contrib.auth.decorators import login_required
+from django.shortcuts import redirect, get_object_or_404, reverse
 from django.utils.decorators import method_decorator
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from django.views.generic.detail import DetailView
 from django.views.generic import TemplateView
-from django.shortcuts import redirect, get_object_or_404
-from django.urls import reverse
-from .forms import *
-from .models import *
+from django.views.generic.base import View
+from django.views.generic.detail import DetailView
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from .forms import PollForm, QuestionForm, ChoiceForm
+from .models import Poll, Question, Choice, Vote
 
 
 @method_decorator(login_required, name="dispatch")
@@ -124,9 +124,10 @@ class DeleteChoice(DeleteView):
         return get_object_or_404(Choice, id=self.kwargs['choice_id'])
 
 
-@login_required
-def vote(request, choice_id):
-    choice = get_object_or_404(Choice, id=choice_id)
-    Vote.objects.filter(choice__question=choice.question, voter=request.user).update_or_create(
-        voter=request.user, defaults={'choice': choice})
-    return redirect('show_poll', choice.question.poll_id)
+@method_decorator(login_required, name='dispatch')
+class Pick(View):
+    def get(self, request, *args, **kwargs):
+        choice = get_object_or_404(Choice, id=kwargs['choice_id'])
+        Vote.objects.filter(choice__question=choice.question, voter=request.user).update_or_create(
+            voter=request.user, defaults={'choice': choice})
+        return redirect(choice.question.poll)
