@@ -9,7 +9,6 @@ from .forms import PollForm, QuestionForm, ChoiceForm
 from .models import Poll, Question, Choice, Vote
 
 
-@method_decorator(login_required, name="dispatch")
 class Home(TemplateView):
     template_name = 'polls/home.html'
 
