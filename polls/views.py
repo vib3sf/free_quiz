@@ -2,7 +2,6 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, get_object_or_404, reverse
 from django.utils.decorators import method_decorator
 from django.views.generic import TemplateView
-from django.views.generic.base import View
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from .forms import PollForm, QuestionForm, ChoiceForm
@@ -136,21 +135,19 @@ class DeleteChoice(DeleteView):
         return get_object_or_404(Choice, id=self.kwargs['choice_id'])
 
 
-@method_decorator(login_required, name='dispatch')
-class Pick(View):
-    def get(self, request, *args, **kwargs):
-        choice = get_object_or_404(Choice, id=kwargs['choice_id'])
-        Vote.objects.filter(choice__question=choice.question, voter=request.user)\
-            .update_or_create(voter=request.user, defaults={'choice': choice})
-        return redirect('vote', choice.question.poll.id)
+@login_required
+def pick(request, *args, **kwargs):
+    choice = get_object_or_404(Choice, id=kwargs['choice_id'])
+    Vote.objects.filter(choice__question=choice.question, voter=request.user)\
+        .update_or_create(voter=request.user, defaults={'choice': choice})
+    return redirect('vote', choice.question.poll.id)
 
 
-@method_decorator(login_required, name='dispatch')
-class FinishPoll(View):
-    def get(self, request, *args, **kwargs):
-        poll = get_object_or_404(Poll, id=kwargs['poll_id'])
-        votes = Vote.objects.filter(choice__question__poll=poll, voter=request.user)
-        if votes.count() == poll.question_set.count():
-            votes.update(poll_finished=True)
-            return redirect('show_poll', poll.id)
-        return redirect('vote', poll.id)
+@login_required
+def finish_poll(request, *args, **kwargs):
+    poll = get_object_or_404(Poll, id=kwargs['poll_id'])
+    votes = Vote.objects.filter(choice__question__poll=poll, voter=request.user)
+    if votes.count() == poll.question_set.count():
+        votes.update(poll_finished=True)
+        return redirect('show_poll', poll.id)
+    return redirect('vote', poll.id)
