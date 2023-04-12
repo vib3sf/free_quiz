@@ -24,8 +24,10 @@ class Profile(TemplateView):
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
         user_polls = self.request.user.poll_set.all()
-        completed_polls = Poll.objects.filter(question__choice__vote__voter=self.request.user)\
-            .exclude(id__in=user_polls)
+        completed_polls = Poll.objects.filter(
+            question__choice__vote__voter=self.request.user,
+            question__choice__vote__poll_finished=True
+        ).distinct().exclude(id__in=user_polls)
         context.update({
             'user_polls': user_polls,
             'completed_polls': completed_polls
