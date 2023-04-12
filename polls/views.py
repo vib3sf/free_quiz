@@ -20,11 +20,10 @@ class ShowPoll(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        user = self.request
         poll = get_object_or_404(Poll, id=self.kwargs['poll_id'])
         context.update({
-            'can_vote': poll.can_revote or Vote.objects.filter(
-                choice__question__poll=poll, poll_finished=True).count() == 0
+            'can_vote': poll.can_revote or not Vote.objects.filter(
+                choice__question__poll=poll, poll_finished=True).exists()
         })
         return context
 
