@@ -1,0 +1,22 @@
+{% extends "polls/base.html" %}
+{% load crispy_forms_filters %}
+{% block content %}
+    <div class="container">
+        <div class="content-section">
+            <h2> {{ poll }}</h2>
+            <p>Poll creator: {{ poll.creator }}</p>
+            {% for question in poll.question_set.all %}
+                <p>{{ question }}</p>
+                <ul>
+                    {% for choice in question.choice_set.all %}
+                        <li>
+                            {{ choice }}
+                            <a href="{% url 'pick' choice.id%}">vote</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endfor %}
+            <a href="{% url 'finish' poll.id %}">Submit</a>
+        </div>
+    </div>
+{% endblock content %}

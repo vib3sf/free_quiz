@@ -4,6 +4,7 @@ from .views import *
 urlpatterns = [
     path('', Home.as_view(), name='home'),
     path('create_poll/', CreatePoll.as_view(), name='create_poll'),
+    path('poll/<int:poll_id>/edit/', Edit.as_view(), name='edit'),
     path('poll/<int:poll_id>/', ShowPoll.as_view(), name='show_poll'),
     path('poll/<int:poll_id>/edit_poll/', EditPoll.as_view(), name='edit_poll'),
     path('poll/<int:poll_id>/delete_poll/', DeletePoll.as_view(), name='delete_poll'),
@@ -13,5 +14,7 @@ urlpatterns = [
     path('poll/<int:question_id>/create_choice', CreateChoice.as_view(), name='create_choice'),
     path('poll/<int:choice_id>/edit_choice/', EditChoice.as_view(), name='edit_choice'),
     path('poll/<int:choice_id>/delete_choice/', DeleteChoice.as_view(), name='delete_choice'),
-    path('poll/<int:choice_id>/vote', Pick.as_view(), name='vote'),
+    path('poll/<int:choice_id>/pick', Pick.as_view(), name='pick'),
+    path('poll/<int:poll_id>/vote', CreateOrEditVote.as_view(), name='vote'),
+    path('poll/<int:poll_id>/finish', FinishPoll.as_view(), name='finish')
 ]

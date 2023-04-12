@@ -5,7 +5,7 @@ from .models import *
 class PollForm(forms.ModelForm):
     class Meta:
         model = Poll
-        fields = ['poll_text']
+        fields = ['title', 'description', 'can_revote']
         widgets = {
         }
 

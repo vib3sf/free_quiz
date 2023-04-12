@@ -14,6 +14,27 @@ class Home(TemplateView):
 
 
 @method_decorator(login_required, name="dispatch")
+class ShowPoll(DetailView):
+    model = Poll
+    template_name = 'polls/show_poll.html'
+    pk_url_kwarg = 'poll_id'
+
+
+@method_decorator(login_required, name='dispatch')
+class CreateOrEditVote(DetailView):
+    model = Poll
+    template_name = 'polls/vote.html'
+    pk_url_kwarg = 'poll_id'
+
+
+@method_decorator(login_required, name="dispatch")
+class Edit(DeleteView):
+    model = Poll
+    template_name = 'polls/edit.html'
+    pk_url_kwarg = 'poll_id'
+
+
+@method_decorator(login_required, name="dispatch")
 class CreatePoll(CreateView):
     form_class = PollForm
     template_name = 'polls/create_or_edit_poll.html'
@@ -44,19 +65,12 @@ class DeletePoll(DeleteView):
 
 
 @method_decorator(login_required, name="dispatch")
-class ShowPoll(DetailView):
-    model = Poll
-    template_name = 'polls/show_poll.html'
-    pk_url_kwarg = 'poll_id'
-
-
-@method_decorator(login_required, name="dispatch")
 class CreateQuestion(CreateView):
     form_class = QuestionForm
     template_name = 'polls/create_or_edit_question.html'
 
     def get_success_url(self):
-        return reverse('show_poll', kwargs={'poll_id': self.kwargs['poll_id']})
+        return reverse('edit', kwargs={'poll_id': self.kwargs['poll_id']})
 
     def form_valid(self, form):
         form.instance.poll_id = self.kwargs['poll_id']
@@ -69,7 +83,7 @@ class EditQuestion(UpdateView):
     template_name = 'polls/create_or_edit_question.html'
 
     def get_success_url(self):
-        return reverse('show_poll', kwargs={'poll_id': self.get_object().poll_id})
+        return reverse('edit', kwargs={'poll_id': self.get_object().poll_id})
 
     def get_object(self, queryset=None):
         return get_object_or_404(Question, id=self.kwargs['question_id'])
@@ -80,7 +94,7 @@ class DeleteQuestion(DeleteView):
     template_name = 'polls/confirm_delete.html'
 
     def get_success_url(self):
-        return reverse('show_poll', kwargs={'poll_id': self.get_object().poll_id})
+        return reverse('edit', kwargs={'poll_id': self.get_object().poll_id})
 
     def get_object(self, queryset=None):
         return get_object_or_404(Question, id=self.kwargs['question_id'])
@@ -92,8 +106,7 @@ class CreateChoice(CreateView):
     template_name = 'polls/create_or_edit_choice.html'
 
     def get_success_url(self):
-        return reverse('show_poll', kwargs={'poll_id': get_object_or_404(
-            Question, id=self.kwargs['question_id']).poll_id})
+        return reverse('edit', kwargs={'poll_id': get_object_or_404(Question, id=self.kwargs['question_id']).poll_id})
 
     def form_valid(self, form):
         form.instance.question_id = self.kwargs['question_id']
@@ -106,7 +119,7 @@ class EditChoice(UpdateView):
     template_name = 'polls/create_or_edit_question.html'
 
     def get_success_url(self):
-        return reverse('show_poll', kwargs={'poll_id': self.get_object().question.poll_id})
+        return reverse('edit', kwargs={'poll_id': self.get_object().question.poll_id})
 
     def get_object(self, queryset=None):
         return get_object_or_404(Choice, id=self.kwargs['choice_id'])
@@ -117,7 +130,7 @@ class DeleteChoice(DeleteView):
     template_name = 'polls/confirm_delete.html'
 
     def get_success_url(self):
-        return reverse('show_poll', kwargs={'poll_id': self.get_object().question.poll_id})
+        return reverse('edit', kwargs={'poll_id': self.get_object().question.poll_id})
 
     def get_object(self, queryset=None):
         return get_object_or_404(Choice, id=self.kwargs['choice_id'])
@@ -127,6 +140,17 @@ class DeleteChoice(DeleteView):
 class Pick(View):
     def get(self, request, *args, **kwargs):
         choice = get_object_or_404(Choice, id=kwargs['choice_id'])
-        Vote.objects.filter(choice__question=choice.question, voter=request.user).update_or_create(
-            voter=request.user, defaults={'choice': choice})
-        return redirect(choice.question.poll)
+        Vote.objects.filter(choice__question=choice.question, voter=request.user)\
+            .update_or_create(voter=request.user, defaults={'choice': choice})
+        return redirect('vote', choice.question.poll.id)
+
+
+@method_decorator(login_required, name='dispatch')
+class FinishPoll(View):
+    def get(self, request, *args, **kwargs):
+        poll = get_object_or_404(Poll, id=kwargs['poll_id'])
+        votes = Vote.objects.filter(choice__question__poll=poll, voter=request.user)
+        if votes.count() == poll.question_set.count():
+            votes.update(poll_finished=True)
+            return redirect('show_poll', poll.id)
+        return redirect('vote', poll.id)

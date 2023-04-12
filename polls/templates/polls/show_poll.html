@@ -5,37 +5,20 @@
     <div class="content-section">
         <h2> {{ poll }}</h2>
         <p>Poll creator: {{ poll.creator }}</p>
-        <p>
-            {% if user == poll.creator %}
-                <a href="{% url 'edit_poll' poll.id %}">edit</a>
-                <a href="{% url 'delete_poll' poll.id %}">delete</a>
-            {% endif %}
-        </p>
         {% for question in poll.question_set.all %}
             <p>{{ question }}</p>
-                {% if user == poll.creator %}
-                    <a href="{% url 'edit_question' question.id %}">edit</a>
-                    <a href="{% url 'delete_question' question.id%}">delete</a>
-                {% endif %}
             <ul>
                 {% for choice in question.choice_set.all %}
                     <li>
                         {{ choice }}
-                        {% if user == poll.creator %}
-                            <a href="{% url 'delete_choice' choice.id%}">delete</a>
-                            <a href="{% url 'edit_choice' choice.id%}">edit</a>
-                        {% endif %}
-                        <a href="{% url 'vote' choice.id%}">vote</a>
                         {{ choice.get_percent }}
                     </li>
                 {% endfor %}
             </ul>
-            {% if user == poll.creator %}
-                <a href="{% url 'create_choice' question.id %}">Add choice</a>
-            {% endif %}
         {% endfor %}
+        <a href="{% url 'vote' poll.id %}">Vote</a>
         {% if user == poll.creator %}
-            <a href="{% url 'create_question' poll.id %}">Add question</a>
+            <a href="{% url 'edit' poll.id %}">Edit</a>
         {% endif %}
     </div>
 </div>
