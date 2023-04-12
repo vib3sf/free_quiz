@@ -18,6 +18,16 @@ class ShowPoll(DetailView):
     template_name = 'polls/show_poll.html'
     pk_url_kwarg = 'poll_id'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.request
+        poll = get_object_or_404(Poll, id=self.kwargs['poll_id'])
+        context.update({
+            'can_vote': poll.can_revote or Vote.objects.filter(
+                choice__question__poll=poll, poll_finished=True).count() == 0
+        })
+        return context
+
 
 @method_decorator(login_required, name='dispatch')
 class CreateOrEditVote(DetailView):

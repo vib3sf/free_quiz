@@ -16,7 +16,9 @@
                 {% endfor %}
             </ul>
         {% endfor %}
-        <a href="{% url 'vote' poll.id %}">Vote</a>
+        {% if can_vote %}
+            <a href="{% url 'vote' poll.id %}">Vote</a>
+        {% endif %}
         {% if user == poll.creator %}
             <a href="{% url 'edit' poll.id %}">Edit</a>
         {% endif %}
