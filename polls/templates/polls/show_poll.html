@@ -5,22 +5,23 @@
     <div class="content-section">
         <h2> {{ poll }}</h2>
         <p>Poll creator: {{ poll.creator }}</p>
-        {% for question in poll.question_set.all %}
-            <p>{{ question }}</p>
-            <ul>
-                {% for choice in question.choice_set.all %}
-                    <li>
-                        {{ choice }}
-                        {{ choice.get_percent }}
-                    </li>
-                {% endfor %}
-            </ul>
-        {% endfor %}
+        {% if poll_completed %}
+            {% for question in poll.question_set.all %}
+                <p>{{ question }}</p>
+                <ul>
+                    {% for choice in question.choice_set.all %}
+                        <li>
+                            {{ choice }}
+                            {{ choice.get_percent }}
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endfor %}
+        {% endif %}
         {% if can_vote %}
             <a href="{% url 'vote' poll.id %}">Vote</a>
-        {% endif %}
-        {% if user == poll.creator %}
-            <a href="{% url 'edit' poll.id %}">Edit</a>
+        {% else %}
+            <p>The test can only be taken once.</p>
         {% endif %}
     </div>
 </div>

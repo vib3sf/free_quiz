@@ -11,7 +11,7 @@ class Poll(models.Model):
     can_revote = models.BooleanField()
 
     def get_absolute_url(self):
-        return reverse('edit', kwargs={'poll_id': self.id})
+        return reverse('show_poll', kwargs={'poll_id': self.id})
 
     def __str__(self):
         return self.title

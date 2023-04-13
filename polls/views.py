@@ -1,4 +1,5 @@
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import PermissionDenied
 from django.shortcuts import redirect, get_object_or_404, reverse
 from django.utils.decorators import method_decorator
 from django.views.generic import TemplateView
@@ -21,9 +22,11 @@ class ShowPoll(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         poll = get_object_or_404(Poll, id=self.kwargs['poll_id'])
+        poll_completed = Vote.objects.filter(choice__question__poll=poll, poll_finished=True, voter=self.request.user)\
+            .exists()
         context.update({
-            'can_vote': poll.can_revote or not Vote.objects.filter(
-                choice__question__poll=poll, poll_finished=True).exists()
+            'poll_completed': poll_completed,
+            'can_vote': poll.can_revote or not poll_completed
         })
         return context
 
@@ -32,20 +35,33 @@ class ShowPoll(DetailView):
 class CreateOrEditVote(DetailView):
     model = Poll
     template_name = 'polls/vote.html'
-    pk_url_kwarg = 'poll_id'
+
+    def get_object(self, queryset=None):
+        poll = get_object_or_404(Poll, id=self.kwargs['poll_id'])
+        if poll.creator != self.request.user:
+            raise PermissionDenied
+        return poll
 
 
 @method_decorator(login_required, name="dispatch")
-class Edit(DeleteView):
+class Edit(DetailView):
     model = Poll
     template_name = 'polls/edit.html'
-    pk_url_kwarg = 'poll_id'
+
+    def get_object(self, queryset=None):
+        poll = get_object_or_404(Poll, id=self.kwargs['poll_id'])
+        if poll.creator != self.request.user:
+            raise PermissionDenied
+        return poll
 
 
 @method_decorator(login_required, name="dispatch")
 class CreatePoll(CreateView):
     form_class = PollForm
     template_name = 'polls/create_or_edit_poll.html'
+
+    def get_success_url(self):
+        return reverse('edit', kwargs={'poll_id': self.object.id})
 
     def form_valid(self, form):
         form.instance.creator = self.request.user
@@ -58,7 +74,10 @@ class EditPoll(UpdateView):
     template_name = 'polls/create_or_edit_poll.html'
 
     def get_object(self, queryset=None):
-        return get_object_or_404(Poll, id=self.kwargs['poll_id'])
+        poll = get_object_or_404(Poll, id=self.kwargs['poll_id'])
+        if poll.creator != self.request.user:
+            raise PermissionDenied
+        return poll
 
 
 @method_decorator(login_required, name="dispatch")
@@ -69,13 +88,22 @@ class DeletePoll(DeleteView):
         return reverse('home')
 
     def get_object(self, queryset=None):
-        return get_object_or_404(Poll, id=self.kwargs['poll_id'])
+        poll = get_object_or_404(Poll, id=self.kwargs['poll_id'])
+        if poll.creator != self.request.user:
+            raise PermissionDenied
+        return poll
 
 
 @method_decorator(login_required, name="dispatch")
 class CreateQuestion(CreateView):
     form_class = QuestionForm
     template_name = 'polls/create_or_edit_question.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        poll = get_object_or_404(Poll, id=kwargs['poll_id'])
+        if poll.creator != self.request.user:
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
 
     def get_success_url(self):
         return reverse('edit', kwargs={'poll_id': self.kwargs['poll_id']})
@@ -94,7 +122,10 @@ class EditQuestion(UpdateView):
         return reverse('edit', kwargs={'poll_id': self.get_object().poll_id})
 
     def get_object(self, queryset=None):
-        return get_object_or_404(Question, id=self.kwargs['question_id'])
+        question = get_object_or_404(Question, id=self.kwargs['question_id'])
+        if question.poll.creator != self.request.user:
+            raise PermissionDenied
+        return question
 
 
 @method_decorator(login_required, name="dispatch")
@@ -105,7 +136,10 @@ class DeleteQuestion(DeleteView):
         return reverse('edit', kwargs={'poll_id': self.get_object().poll_id})
 
     def get_object(self, queryset=None):
-        return get_object_or_404(Question, id=self.kwargs['question_id'])
+        question = get_object_or_404(Question, id=self.kwargs['question_id'])
+        if question.poll.creator != self.request.user:
+            raise PermissionDenied
+        return question
 
 
 @method_decorator(login_required, name="dispatch")
@@ -113,8 +147,14 @@ class CreateChoice(CreateView):
     form_class = ChoiceForm
     template_name = 'polls/create_or_edit_choice.html'
 
+    def dispatch(self, request, *args, **kwargs):
+        question = get_object_or_404(Question, poll_id=kwargs['question_id'])
+        if question.poll.creator != self.request.user:
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
+
     def get_success_url(self):
-        return reverse('edit', kwargs={'poll_id': get_object_or_404(Question, id=self.kwargs['question_id']).poll_id})
+        return reverse('edit', kwargs={'id': get_object_or_404(Question, id=self.kwargs['question_id']).poll_id})
 
     def form_valid(self, form):
         form.instance.question_id = self.kwargs['question_id']
@@ -130,7 +170,10 @@ class EditChoice(UpdateView):
         return reverse('edit', kwargs={'poll_id': self.get_object().question.poll_id})
 
     def get_object(self, queryset=None):
-        return get_object_or_404(Choice, id=self.kwargs['choice_id'])
+        choice = get_object_or_404(Choice, id=self.kwargs['choice_id'])
+        if choice.question.poll.creator != self.request.user:
+            raise PermissionDenied
+        return choice
 
 
 @method_decorator(login_required, name="dispatch")
@@ -141,7 +184,10 @@ class DeleteChoice(DeleteView):
         return reverse('edit', kwargs={'poll_id': self.get_object().question.poll_id})
 
     def get_object(self, queryset=None):
-        return get_object_or_404(Choice, id=self.kwargs['choice_id'])
+        choice = get_object_or_404(Choice, id=self.kwargs['choice_id'])
+        if choice.question.poll.creator != self.request.user:
+            raise PermissionDenied
+        return choice
 
 
 @login_required
