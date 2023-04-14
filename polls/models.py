@@ -13,6 +13,12 @@ class Poll(models.Model):
     def get_absolute_url(self):
         return reverse('show_poll', kwargs={'poll_id': self.id})
 
+    def user_completed_poll(self, user):
+        return Vote.objects.filter(choice__question__poll=self, poll_finished=True, voter=user).exists()
+
+    def user_can_vote(self, user):
+        return self.can_revote or not self.user_completed_poll(user)
+
     def __str__(self):
         return self.title
 

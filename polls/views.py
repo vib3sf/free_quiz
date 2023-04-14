@@ -1,5 +1,5 @@
 from django.contrib.auth.decorators import login_required
-from django.core.exceptions import PermissionDenied
+from django.contrib.auth.mixins import UserPassesTestMixin
 from django.shortcuts import redirect, get_object_or_404, reverse
 from django.utils.decorators import method_decorator
 from django.views.generic import TemplateView
@@ -7,6 +7,7 @@ from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from .forms import PollForm, QuestionForm, ChoiceForm
 from .models import Poll, Question, Choice, Vote
+from django.db.models import Count
 
 
 class Home(TemplateView):
@@ -22,37 +23,31 @@ class ShowPoll(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         poll = get_object_or_404(Poll, id=self.kwargs['poll_id'])
-        poll_completed = Vote.objects.filter(choice__question__poll=poll, poll_finished=True, voter=self.request.user)\
-            .exists()
         context.update({
-            'poll_completed': poll_completed,
-            'can_vote': poll.can_revote or not poll_completed
+            'poll_completed': poll.user_completed_poll(self.request.user),
+            'can_vote': poll.user_can_vote(self.request.user)
         })
         return context
 
 
 @method_decorator(login_required, name='dispatch')
-class CreateOrEditVote(DetailView):
+class CreateOrEditVote(UserPassesTestMixin, DetailView):
     model = Poll
     template_name = 'polls/vote.html'
+    pk_url_kwarg = 'poll_id'
 
-    def get_object(self, queryset=None):
-        poll = get_object_or_404(Poll, id=self.kwargs['poll_id'])
-        if poll.creator != self.request.user:
-            raise PermissionDenied
-        return poll
+    def test_func(self):
+        return self.get_object().user_can_vote(self.request.user)
 
 
 @method_decorator(login_required, name="dispatch")
-class Edit(DetailView):
+class Edit(UserPassesTestMixin, DetailView):
     model = Poll
     template_name = 'polls/edit.html'
+    pk_url_kwarg = 'poll_id'
 
-    def get_object(self, queryset=None):
-        poll = get_object_or_404(Poll, id=self.kwargs['poll_id'])
-        if poll.creator != self.request.user:
-            raise PermissionDenied
-        return poll
+    def test_func(self):
+        return self.get_object().creator == self.request.user
 
 
 @method_decorator(login_required, name="dispatch")
@@ -69,41 +64,38 @@ class CreatePoll(CreateView):
 
 
 @method_decorator(login_required, name="dispatch")
-class EditPoll(UpdateView):
+class EditPoll(UserPassesTestMixin, UpdateView):
     form_class = PollForm
+    model = Poll
     template_name = 'polls/create_or_edit_poll.html'
+    pk_url_kwarg = 'poll_id'
 
-    def get_object(self, queryset=None):
-        poll = get_object_or_404(Poll, id=self.kwargs['poll_id'])
-        if poll.creator != self.request.user:
-            raise PermissionDenied
-        return poll
+    def test_func(self):
+        return self.get_object().creator == self.request.user
 
 
 @method_decorator(login_required, name="dispatch")
-class DeletePoll(DeleteView):
+class DeletePoll(UserPassesTestMixin, DeleteView):
     template_name = 'polls/confirm_delete.html'
+    model = Poll
+    pk_url_kwarg = 'poll_id'
+
+    def test_func(self):
+        return self.get_object().creator == self.request.user
 
     def get_success_url(self):
         return reverse('home')
 
-    def get_object(self, queryset=None):
-        poll = get_object_or_404(Poll, id=self.kwargs['poll_id'])
-        if poll.creator != self.request.user:
-            raise PermissionDenied
-        return poll
-
 
 @method_decorator(login_required, name="dispatch")
-class CreateQuestion(CreateView):
+class CreateQuestion(UserPassesTestMixin, CreateView):
     form_class = QuestionForm
+    model = Poll
     template_name = 'polls/create_or_edit_question.html'
+    pk_url_kwarg = 'poll_id'
 
-    def dispatch(self, request, *args, **kwargs):
-        poll = get_object_or_404(Poll, id=kwargs['poll_id'])
-        if poll.creator != self.request.user:
-            raise PermissionDenied
-        return super().dispatch(request, *args, **kwargs)
+    def test_func(self):
+        return self.get_object().creator == self.request.user
 
     def get_success_url(self):
         return reverse('edit', kwargs={'poll_id': self.kwargs['poll_id']})
@@ -114,47 +106,44 @@ class CreateQuestion(CreateView):
 
 
 @method_decorator(login_required, name="dispatch")
-class EditQuestion(UpdateView):
+class EditQuestion(UserPassesTestMixin, UpdateView):
     form_class = QuestionForm
+    model = Question
     template_name = 'polls/create_or_edit_question.html'
+    pk_url_kwarg = 'question_id'
+
+    def test_func(self):
+        return self.get_object().poll.creator == self.request.user
 
     def get_success_url(self):
         return reverse('edit', kwargs={'poll_id': self.get_object().poll_id})
 
-    def get_object(self, queryset=None):
-        question = get_object_or_404(Question, id=self.kwargs['question_id'])
-        if question.poll.creator != self.request.user:
-            raise PermissionDenied
-        return question
-
 
 @method_decorator(login_required, name="dispatch")
-class DeleteQuestion(DeleteView):
+class DeleteQuestion(UserPassesTestMixin, DeleteView):
     template_name = 'polls/confirm_delete.html'
+    model = Question
+    pk_url_kwarg = 'question_id'
+
+    def test_func(self):
+        return self.get_object().poll.creator == self.request.user
 
     def get_success_url(self):
         return reverse('edit', kwargs={'poll_id': self.get_object().poll_id})
 
-    def get_object(self, queryset=None):
-        question = get_object_or_404(Question, id=self.kwargs['question_id'])
-        if question.poll.creator != self.request.user:
-            raise PermissionDenied
-        return question
-
 
 @method_decorator(login_required, name="dispatch")
-class CreateChoice(CreateView):
+class CreateChoice(UserPassesTestMixin, CreateView):
     form_class = ChoiceForm
+    model = Question
     template_name = 'polls/create_or_edit_choice.html'
+    pk_url_kwarg = 'question_id'
 
-    def dispatch(self, request, *args, **kwargs):
-        question = get_object_or_404(Question, poll_id=kwargs['question_id'])
-        if question.poll.creator != self.request.user:
-            raise PermissionDenied
-        return super().dispatch(request, *args, **kwargs)
+    def test_func(self):
+        return self.get_object().poll.creator == self.request.user
 
     def get_success_url(self):
-        return reverse('edit', kwargs={'id': get_object_or_404(Question, id=self.kwargs['question_id']).poll_id})
+        return reverse('edit', kwargs={'poll_id': self.get_object().poll_id})
 
     def form_valid(self, form):
         form.instance.question_id = self.kwargs['question_id']
@@ -162,47 +151,59 @@ class CreateChoice(CreateView):
 
 
 @method_decorator(login_required, name="dispatch")
-class EditChoice(UpdateView):
+class EditChoice(UserPassesTestMixin, UpdateView):
     form_class = ChoiceForm
+    model = Choice
     template_name = 'polls/create_or_edit_question.html'
+    pk_url_kwarg = 'choice_id'
+
+    def test_func(self):
+        return self.get_object().question.poll.creator == self.request.user
 
     def get_success_url(self):
         return reverse('edit', kwargs={'poll_id': self.get_object().question.poll_id})
-
-    def get_object(self, queryset=None):
-        choice = get_object_or_404(Choice, id=self.kwargs['choice_id'])
-        if choice.question.poll.creator != self.request.user:
-            raise PermissionDenied
-        return choice
 
 
 @method_decorator(login_required, name="dispatch")
-class DeleteChoice(DeleteView):
+class DeleteChoice(UserPassesTestMixin, DeleteView):
     template_name = 'polls/confirm_delete.html'
+    model = Choice
+    pk_url_kwarg = 'choice_id'
+
+    def test_func(self):
+        return self.get_object().question.poll.creator == self.request.user
 
     def get_success_url(self):
         return reverse('edit', kwargs={'poll_id': self.get_object().question.poll_id})
 
-    def get_object(self, queryset=None):
-        choice = get_object_or_404(Choice, id=self.kwargs['choice_id'])
-        if choice.question.poll.creator != self.request.user:
-            raise PermissionDenied
-        return choice
+
+@method_decorator(login_required, name="dispatch")
+class Pick(UserPassesTestMixin, DetailView):
+    model = Choice
+    pk_url_kwarg = 'choice_id'
+
+    def test_func(self):
+        return self.get_object().question.poll.user_can_vote(self.request.user)
+
+    def get(self, request, *args, **kwargs):
+        Vote.objects.filter(choice__question=self.get_object().question, voter=request.user)\
+            .update_or_create(voter=request.user, defaults={'choice': self.get_object()})
+        return redirect('vote', self.get_object().question.poll.id)
 
 
-@login_required
-def pick(request, *args, **kwargs):
-    choice = get_object_or_404(Choice, id=kwargs['choice_id'])
-    Vote.objects.filter(choice__question=choice.question, voter=request.user)\
-        .update_or_create(voter=request.user, defaults={'choice': choice})
-    return redirect('vote', choice.question.poll.id)
+@method_decorator(login_required, name="dispatch")
+class FinishPoll(UserPassesTestMixin, DetailView):
+    model = Poll
+    pk_url_kwarg = 'poll_id'
 
+    def test_func(self):
+        return self.get_object().user_can_vote(self.request.user)
 
-@login_required
-def finish_poll(request, *args, **kwargs):
-    poll = get_object_or_404(Poll, id=kwargs['poll_id'])
-    votes = Vote.objects.filter(choice__question__poll=poll, voter=request.user)
-    if votes.count() == poll.question_set.count():
-        votes.update(poll_finished=True)
-        return redirect('show_poll', poll.id)
-    return redirect('vote', poll.id)
+    def get(self, request, *args, **kwargs):
+        poll = self.get_object()
+        votes = Vote.objects.filter(choice__question__poll=poll, voter=request.user)
+        if votes.count() == Question.objects.annotate(choice_count=Count('choice'))\
+                .filter(poll=poll, choice_count__gte=1).count():
+            votes.update(poll_finished=True)
+            return redirect('show_poll', poll.id)
+        return redirect('vote', poll.id)

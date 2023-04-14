@@ -25,6 +25,10 @@
                 <a href="{% url 'create_choice' question.id %}">Add choice</a>
             {% endfor %}
             <a href="{% url 'create_question' poll.id %}">Add question</a>
+
+            <div class="col-4 offset-2">
+                <button type="submit" class="btn btn-block btn-primary">Apply</button>
+            </div>
         </div>
     </div>
 {% endblock %}
