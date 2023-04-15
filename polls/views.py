@@ -1,6 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import UserPassesTestMixin
-from django.shortcuts import redirect, get_object_or_404, reverse
+from django.shortcuts import redirect, reverse
+from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.generic import TemplateView
 from django.views.generic.detail import DetailView
@@ -22,7 +23,7 @@ class ShowPoll(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        poll = get_object_or_404(Poll, id=self.kwargs['poll_id'])
+        poll = self.get_object()
         context.update({
             'poll_completed': poll.user_completed_poll(self.request.user),
             'can_vote': poll.user_can_vote(self.request.user)
@@ -79,12 +80,10 @@ class DeletePoll(UserPassesTestMixin, DeleteView):
     template_name = 'polls/confirm_delete.html'
     model = Poll
     pk_url_kwarg = 'poll_id'
+    success_url = reverse_lazy('home')
 
     def test_func(self):
         return self.get_object().creator == self.request.user
-
-    def get_success_url(self):
-        return reverse('home')
 
 
 @method_decorator(login_required, name="dispatch")

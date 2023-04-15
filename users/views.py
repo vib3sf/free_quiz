@@ -33,9 +33,3 @@ class Profile(TemplateView):
             'completed_polls': completed_polls
         })
         return context
-
-
-@login_required
-def logout(request):
-    log.logout(request)
-    return redirect('home')
