@@ -7,14 +7,14 @@
             <p>Poll creator: {{ poll.creator }}</p>
             {% for question in poll.question_set.all %}
                 <p>{{ question }}</p>
-                <ul>
+                <ol>
                     {% for choice in question.choice_set.all %}
                         <li>
                             {{ choice }}
                             <a href="{% url 'pick' choice.id%}">vote</a>
                         </li>
                     {% endfor %}
-                </ul>
+                </ol>
             {% endfor %}
             <a href="{% url 'finish' poll.id %}">Submit</a>
         </div>

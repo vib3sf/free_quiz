@@ -54,7 +54,7 @@ class Edit(UserPassesTestMixin, DetailView):
 @method_decorator(login_required, name="dispatch")
 class CreatePoll(CreateView):
     form_class = PollForm
-    template_name = 'polls/create_or_edit_poll.html'
+    template_name = 'polls/create_or_edit.html'
 
     def get_success_url(self):
         return reverse('edit', kwargs={'poll_id': self.object.id})
@@ -68,7 +68,7 @@ class CreatePoll(CreateView):
 class EditPoll(UserPassesTestMixin, UpdateView):
     form_class = PollForm
     model = Poll
-    template_name = 'polls/create_or_edit_poll.html'
+    template_name = 'polls/create_or_edit.html'
     pk_url_kwarg = 'poll_id'
 
     def test_func(self):
@@ -90,7 +90,7 @@ class DeletePoll(UserPassesTestMixin, DeleteView):
 class CreateQuestion(UserPassesTestMixin, CreateView):
     form_class = QuestionForm
     model = Poll
-    template_name = 'polls/create_or_edit_question.html'
+    template_name = 'polls/create_or_edit.html'
     pk_url_kwarg = 'poll_id'
 
     def test_func(self):
@@ -108,7 +108,7 @@ class CreateQuestion(UserPassesTestMixin, CreateView):
 class EditQuestion(UserPassesTestMixin, UpdateView):
     form_class = QuestionForm
     model = Question
-    template_name = 'polls/create_or_edit_question.html'
+    template_name = 'polls/create_or_edit.html'
     pk_url_kwarg = 'question_id'
 
     def test_func(self):
@@ -135,7 +135,7 @@ class DeleteQuestion(UserPassesTestMixin, DeleteView):
 class CreateChoice(UserPassesTestMixin, CreateView):
     form_class = ChoiceForm
     model = Question
-    template_name = 'polls/create_or_edit_choice.html'
+    template_name = 'polls/create_or_edit.html'
     pk_url_kwarg = 'question_id'
 
     def test_func(self):
@@ -153,7 +153,7 @@ class CreateChoice(UserPassesTestMixin, CreateView):
 class EditChoice(UserPassesTestMixin, UpdateView):
     form_class = ChoiceForm
     model = Choice
-    template_name = 'polls/create_or_edit_question.html'
+    template_name = 'polls/create_or_edit.html'
     pk_url_kwarg = 'choice_id'
 
     def test_func(self):

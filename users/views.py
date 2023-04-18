@@ -1,19 +1,16 @@
+from django.urls import reverse_lazy
 from polls.models import Poll
 from django.contrib.auth.decorators import login_required
 from django.views.generic.edit import CreateView
 from django.utils.decorators import method_decorator
 from django.views.generic import TemplateView
-from django.contrib import auth as log
-from django.shortcuts import redirect, reverse
 from .forms import UserRegisterForm
 
 
 class Register(CreateView):
     form_class = UserRegisterForm
     template_name = 'users/register.html'
-
-    def get_success_url(self):
-        return reverse('home')
+    success_url = reverse_lazy('home')
 
 
 @method_decorator(login_required, name="dispatch")

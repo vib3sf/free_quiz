@@ -8,14 +8,14 @@
         {% if poll_completed %}
             {% for question in poll.question_set.all %}
                 <p>{{ question }}</p>
-                <ul>
+                <ol>
                     {% for choice in question.choice_set.all %}
                         <li>
                             {{ choice }}
                             {{ choice.get_percent }}
                         </li>
                     {% endfor %}
-                </ul>
+                </ol>
             {% endfor %}
         {% endif %}
         {% if can_vote %}
