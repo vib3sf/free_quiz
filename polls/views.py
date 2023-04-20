@@ -3,16 +3,20 @@ from django.contrib.auth.mixins import UserPassesTestMixin
 from django.shortcuts import redirect, reverse, get_object_or_404
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
-from django.views.generic import TemplateView
+from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from .forms import PollForm, QuestionForm, ChoiceForm
 from .models import Poll, Question, Choice, Vote
-from django.db.models import Count
 
 
-class Home(TemplateView):
+class Home(ListView):
     template_name = 'polls/home.html'
+    model = Poll
+    context_object_name = 'polls'
+
+    def get_queryset(self):
+        return Poll.objects.order_by('-pub_date')[:5]
 
 
 @method_decorator(login_required, name="dispatch")
