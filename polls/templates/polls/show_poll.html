@@ -23,6 +23,9 @@
         {% else %}
             <p>The test can only be taken once.</p>
         {% endif %}
+        {% if user == poll.creator %}
+            <a href="{% url 'edit' poll.id %}">Edit</a>
+        {% endif %}
     </div>
 </div>
 {% endblock content %}
