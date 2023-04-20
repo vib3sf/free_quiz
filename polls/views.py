@@ -44,7 +44,7 @@ class CreateOrEditVote(UserPassesTestMixin, DetailView):
 def vote(request, poll_id):
     poll = get_object_or_404(Poll, id=poll_id)
     for question in poll.question_set.all():
-        selected_choice = question.choice_set.get(pk=request.POST[f"choice{question.id}"])
+        selected_choice = question.choice_set.get(id=request.POST[f"{question.id}"])
         Vote.objects.filter(choice__question=selected_choice.question, voter=request.user) \
             .update_or_create(voter=request.user, defaults={'choice': selected_choice})
     return redirect(poll)
