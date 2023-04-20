@@ -36,7 +36,7 @@ class ShowPoll(DetailView):
 
 
 @method_decorator(login_required, name='dispatch')
-class CreateOrEditVote(UserPassesTestMixin, DetailView):
+class VoteView(UserPassesTestMixin, DetailView):
     model = Poll
     template_name = 'polls/vote.html'
     pk_url_kwarg = 'poll_id'
