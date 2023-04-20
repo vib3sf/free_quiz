@@ -19,7 +19,7 @@
             {% endfor %}
         {% endif %}
         {% if can_vote %}
-            <a href="{% url 'vote' poll.id %}">Vote</a>
+            <a href="{% url 'show_vote' poll.id %}">Vote</a>
         {% else %}
             <p>The test can only be taken once.</p>
         {% endif %}

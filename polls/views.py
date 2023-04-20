@@ -1,6 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import UserPassesTestMixin
-from django.shortcuts import redirect, reverse
+from django.shortcuts import redirect, reverse, get_object_or_404
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.generic import TemplateView
@@ -39,6 +39,14 @@ class CreateOrEditVote(UserPassesTestMixin, DetailView):
 
     def test_func(self):
         return self.get_object().user_can_vote(self.request.user)
+
+
+def vote(request, poll_id):
+    poll = get_object_or_404(Poll, id=poll_id)
+    for question in poll.question_set.all():
+        selected_choice = question.choice_set.get(pk=request.POST[f"choice{question.id}"])
+        Vote(choice=selected_choice, voter=request.user).save()
+    return redirect(poll)
 
 
 @method_decorator(login_required, name="dispatch")
@@ -174,35 +182,3 @@ class DeleteChoice(UserPassesTestMixin, DeleteView):
 
     def get_success_url(self):
         return reverse('edit', kwargs={'poll_id': self.get_object().question.poll_id})
-
-
-@method_decorator(login_required, name="dispatch")
-class Pick(UserPassesTestMixin, DetailView):
-    model = Choice
-    pk_url_kwarg = 'choice_id'
-
-    def test_func(self):
-        return self.get_object().question.poll.user_can_vote(self.request.user)
-
-    def get(self, request, *args, **kwargs):
-        Vote.objects.filter(choice__question=self.get_object().question, voter=request.user)\
-            .update_or_create(voter=request.user, defaults={'choice': self.get_object()})
-        return redirect('vote', self.get_object().question.poll.id)
-
-
-@method_decorator(login_required, name="dispatch")
-class FinishPoll(UserPassesTestMixin, DetailView):
-    model = Poll
-    pk_url_kwarg = 'poll_id'
-
-    def test_func(self):
-        return self.get_object().user_can_vote(self.request.user)
-
-    def get(self, request, *args, **kwargs):
-        poll = self.get_object()
-        votes = Vote.objects.filter(choice__question__poll=poll, voter=request.user)
-        if votes.count() == Question.objects.annotate(choice_count=Count('choice'))\
-                .filter(poll=poll, choice_count__gte=1).count():
-            votes.update(poll_finished=True)
-            return redirect('show_poll', poll.id)
-        return redirect('vote', poll.id)

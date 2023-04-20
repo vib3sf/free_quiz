@@ -14,7 +14,6 @@ urlpatterns = [
     path('question/<int:question_id>/create_choice', CreateChoice.as_view(), name='create_choice'),
     path('choice/<int:choice_id>/edit_choice/', EditChoice.as_view(), name='edit_choice'),
     path('choice/<int:choice_id>/delete_choice/', DeleteChoice.as_view(), name='delete_choice'),
-    path('choice/<int:choice_id>/pick/', Pick.as_view(), name='pick'),
-    path('poll/<int:poll_id>/vote/', CreateOrEditVote.as_view(), name='vote'),
-    path('poll/<int:poll_id>/finish/', FinishPoll.as_view(), name='finish')
+    path('poll/<int:poll_id>/vote/', CreateOrEditVote.as_view(), name='show_vote'),
+    path('poll/<int:poll_id>/vote', vote, name='vote'),
 ]
