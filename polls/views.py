@@ -1,4 +1,5 @@
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import PermissionDenied
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.shortcuts import redirect, reverse, get_object_or_404
 from django.urls import reverse_lazy
@@ -19,7 +20,6 @@ class Home(ListView):
         return Poll.objects.order_by('-pub_date')[:5]
 
 
-@method_decorator(login_required, name="dispatch")
 class ShowPoll(DetailView):
     model = Poll
     template_name = 'polls/show_poll.html'
@@ -45,8 +45,13 @@ class VoteView(UserPassesTestMixin, DetailView):
         return self.get_object().user_can_vote(self.request.user)
 
 
+@login_required
 def vote(request, poll_id):
     poll = get_object_or_404(Poll, id=poll_id)
+
+    if not poll.user_can_vote(request.user):
+        raise PermissionDenied
+
     for question in poll.question_set.all():
         selected_choice = question.choice_set.get(id=request.POST[f"{question.id}"])
         Vote.objects.filter(choice__question=selected_choice.question, voter=request.user) \
