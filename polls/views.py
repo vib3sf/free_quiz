@@ -9,12 +9,14 @@ from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from .forms import PollForm, QuestionForm, ChoiceForm
 from .models import Poll, Question, Choice, Vote
+from free_quiz.mixins.mixins import TitleMixin
 
 
-class Home(ListView):
+class Home(TitleMixin, ListView):
     template_name = 'polls/home.html'
     model = Poll
     context_object_name = 'polls'
+    title = 'Home'
 
     def get_queryset(self):
         return Poll.objects.order_by('-pub_date')[:5]
