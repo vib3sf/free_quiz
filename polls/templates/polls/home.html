@@ -1,17 +1,17 @@
 {% extends "polls/base.html" %}
 {% block content %}
     <div class="container">
-        <div class="list-polls">
-            <p>Last 5 polls:</p>
-            {% for poll in polls %}
-                <div>
-                    <a href="{{ poll.get_absolute_url }}">{{ poll }}</a>
-                </div>
-            {% endfor %}
-        </div>
         <div class="main_menu">
             <h1>free_quiz!</h1>
             <a href="{% url 'create_poll' %}">Make quiz!</a>
         </div>
+    </div>
+    <div class="list-polls">
+        <p>Last 5 polls:</p>
+        {% for poll in polls %}
+            <div>
+                <a href="{{ poll.get_absolute_url }}">{{ poll }}</a>
+            </div>
+        {% endfor %}
     </div>
 {% endblock content %}

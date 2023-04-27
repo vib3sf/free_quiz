@@ -6,7 +6,7 @@ from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView
 from .forms import PollForm, QuestionForm, ChoiceForm
 from .models import Poll, Question, Choice, Vote
 from free_quiz.mixins.mixins import TitleMixin
@@ -72,16 +72,31 @@ class Edit(UserPassesTestMixin, DetailView):
 
 
 @method_decorator(login_required, name="dispatch")
-class CreatePoll(CreateView):
+class CreatePoll(FormView):
     form_class = PollForm
-    template_name = 'polls/create_or_edit.html'
+    template_name = 'polls/create.html'
 
     def get_success_url(self):
-        return reverse('edit', kwargs={'poll_id': self.object.id})
+        return reverse('show_poll', kwargs={'poll_id': self.object.id})
 
     def form_valid(self, form):
         form.instance.creator = self.request.user
         return super().form_valid(form)
+
+
+def create(request):
+    poll = PollForm(request.POST).save(commit=False)
+    poll.creator = request.user
+    poll.save()
+    questions = [(name, value) for name, value in request.POST.items() if name.startswith('question_')]
+    for question_name, question_value in questions:
+        question = Question(question_text=question_value, poll_id=poll.id)
+        question.save()
+        choices = [(choice_name, choice_value) for choice_name, choice_value in request.POST.items()
+                   if choice_name.startswith(f'choice_{question_name}')]
+        for choice_name, choice_value in choices:
+            Choice(choice_text=choice_value, question_id=question.id).save()
+    return redirect('show_poll', poll.id)
 
 
 @method_decorator(login_required, name="dispatch")

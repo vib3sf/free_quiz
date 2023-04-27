@@ -10,10 +10,6 @@ body{
     flex-direction:column;
 }
 
-header {
-    min-height:30px;
-    background:lightcyan;
-}
 footer {
     min-height:50px;
     bottom: 0;
@@ -31,7 +27,7 @@ article {
 }
 
 .container {
-    height: 90%;
+    height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -40,4 +36,8 @@ article {
     width: 400px;
     height: 300px;
     text-align: center;
+}
+
+.list-polls{
+
 }

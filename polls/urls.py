@@ -16,4 +16,5 @@ urlpatterns = [
     path('choice/<int:choice_id>/delete_choice/', DeleteChoice.as_view(), name='delete_choice'),
     path('poll/<int:poll_id>/vote/', VoteView.as_view(), name='show_vote'),
     path('poll/<int:poll_id>/vote', vote, name='vote'),
+    path('create/', create, name='create'),
 ]
