@@ -6,8 +6,8 @@ function addTest() {
     question_div.className = "question";
     const question_input = document.createElement("input");
     question_input.type = "text";
-    question_input.name = "question_" + count++;
-    question_input.placeholder = "Question " + count;
+    question_input.name = "question_" + count;
+    question_input.placeholder = "Question " + count++;
     question_div.appendChild(question_input);
     const add_choice = document.createElement("button");
     add_choice.type = "button";
