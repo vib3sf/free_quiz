@@ -5,6 +5,8 @@
     <div class="content-section">
         <h2> {{ poll }}</h2>
         <p>Poll creator: {{ poll.creator }}</p>
+        <p>Publication date: {{ poll.pub_date }}</p>
+        <p>Description: {{ poll.description }}</p>
         {% if poll_completed %}
             {% for question in poll.question_set.all %}
                 <p>{{ question }}</p>

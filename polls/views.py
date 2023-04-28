@@ -1,12 +1,13 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.core.exceptions import PermissionDenied
-from django.shortcuts import redirect, reverse, get_object_or_404
+from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import FormView, DeleteView
 from django.views.generic.list import ListView
+
 from free_quiz.mixins.mixins import TitleMixin
 from .forms import PollForm
 from .models import Poll, Question, Choice, Vote
@@ -64,6 +65,7 @@ def create(request):
 
         for choice_name, choice_value in choices:
             Choice(choice_text=choice_value, question_id=question.id).save()
+
     return redirect('show_poll', poll.id)
 
 
