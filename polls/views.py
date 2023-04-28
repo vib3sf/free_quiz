@@ -21,10 +21,13 @@ class Home(TitleMixin, ListView):
         return Poll.objects.order_by('-pub_date')[:5]
 
 
-class ShowPoll(DetailView):
+class ShowPoll(TitleMixin, DetailView):
     model = Poll
     template_name = 'polls/show_poll.html'
     pk_url_kwarg = 'poll_id'
+
+    def get_title(self):
+        return self.get_object()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -37,18 +40,13 @@ class ShowPoll(DetailView):
 
 
 @method_decorator(login_required, name="dispatch")
-class CreatePoll(FormView):
+class CreatePoll(TitleMixin, FormView):
     form_class = PollForm
     template_name = 'polls/create.html'
-
-    def get_success_url(self):
-        return reverse('show_poll', kwargs={'poll_id': self.object.id})
-
-    def form_valid(self, form):
-        form.instance.creator = self.request.user
-        return super().form_valid(form)
+    title = 'Create poll'
 
 
+@login_required
 def create(request):
     poll = PollForm(request.POST).save(commit=False)
     poll.creator = request.user
@@ -69,10 +67,13 @@ def create(request):
 
 
 @method_decorator(login_required, name='dispatch')
-class Pick(UserPassesTestMixin, DetailView):
+class Pick(TitleMixin, UserPassesTestMixin, DetailView):
     model = Poll
     template_name = 'polls/vote.html'
     pk_url_kwarg = 'poll_id'
+
+    def get_title(self):
+        return self.get_object()
 
     def test_func(self):
         return self.get_object().user_can_vote(self.request.user)

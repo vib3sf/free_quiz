@@ -1,4 +1,7 @@
+from django.contrib.auth.views import LoginView
 from django.urls import reverse_lazy
+
+from free_quiz.mixins.mixins import TitleMixin
 from polls.models import Poll
 from django.contrib.auth.decorators import login_required
 from django.views.generic.edit import CreateView
@@ -13,10 +16,16 @@ class Register(CreateView):
     success_url = reverse_lazy('login')
 
 
+class Login(TitleMixin, LoginView):
+    template_name = 'users/login.html'
+    title = 'Login'
+
+
 @method_decorator(login_required, name="dispatch")
-class Profile(TemplateView):
+class Profile(TitleMixin, TemplateView):
     template_name = "users/profile.html"
     model = Poll
+    title = 'Registration'
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
