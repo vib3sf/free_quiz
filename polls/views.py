@@ -36,6 +36,38 @@ class ShowPoll(DetailView):
         return context
 
 
+@method_decorator(login_required, name="dispatch")
+class CreatePoll(FormView):
+    form_class = PollForm
+    template_name = 'polls/create.html'
+
+    def get_success_url(self):
+        return reverse('show_poll', kwargs={'poll_id': self.object.id})
+
+    def form_valid(self, form):
+        form.instance.creator = self.request.user
+        return super().form_valid(form)
+
+
+def create(request):
+    poll = PollForm(request.POST).save(commit=False)
+    poll.creator = request.user
+    poll.save()
+
+    questions = [(name, value) for name, value in request.POST.items() if name.startswith('question_')]
+
+    for question_name, question_value in questions:
+        question = Question(question_text=question_value, poll_id=poll.id)
+        question.save()
+
+        choices = [(choice_name, choice_value) for choice_name, choice_value in request.POST.items()
+                   if choice_name.startswith(f'choice_{question_name}')]
+
+        for choice_name, choice_value in choices:
+            Choice(choice_text=choice_value, question_id=question.id).save()
+    return redirect('show_poll', poll.id)
+
+
 @method_decorator(login_required, name='dispatch')
 class Pick(UserPassesTestMixin, DetailView):
     model = Poll
@@ -58,31 +90,3 @@ def vote(request, poll_id):
         Vote.objects.filter(choice__question=selected_choice.question, voter=request.user) \
             .update_or_create(voter=request.user, defaults={'choice': selected_choice})
     return redirect(poll)
-
-
-@method_decorator(login_required, name="dispatch")
-class CreatePoll(FormView):
-    form_class = PollForm
-    template_name = 'polls/create.html'
-
-    def get_success_url(self):
-        return reverse('show_poll', kwargs={'poll_id': self.object.id})
-
-    def form_valid(self, form):
-        form.instance.creator = self.request.user
-        return super().form_valid(form)
-
-
-def create(request):
-    poll = PollForm(request.POST).save(commit=False)
-    poll.creator = request.user
-    poll.save()
-    questions = [(name, value) for name, value in request.POST.items() if name.startswith('question_')]
-    for question_name, question_value in questions:
-        question = Question(question_text=question_value, poll_id=poll.id)
-        question.save()
-        choices = [(choice_name, choice_value) for choice_name, choice_value in request.POST.items()
-                   if choice_name.startswith(f'choice_{question_name}')]
-        for choice_name, choice_value in choices:
-            Choice(choice_text=choice_value, question_id=question.id).save()
-    return redirect('show_poll', poll.id)
