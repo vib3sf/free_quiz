@@ -12,6 +12,11 @@
             <div>
                 <button class="btn btn-outline-dark" type="submit">Apply</button>
             </div>
+            {% if messages %}
+                {% for message in messages %}
+                    <p{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</p>
+                {% endfor %}
+            {% endif %}
             <script src="{% static 'polls/js/add_forms.js' %}"></script>
         </form>
     </div>

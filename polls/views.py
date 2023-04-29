@@ -1,8 +1,9 @@
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import redirect, get_object_or_404
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.utils.decorators import method_decorator
 from django.views.generic import TemplateView
 from django.views.generic.detail import DetailView
@@ -50,13 +51,21 @@ def create(request):
 
     questions = [(name, value) for name, value in request.POST.items() if name.startswith('question_')]
 
+    if not questions:
+        messages.error(request, 'Poll must have at least on question')
+        return redirect('create_poll')
+
     for question_name, question_value in questions:
         question = Question(question_text=question_value, poll_id=poll.id)
-        question.save()
 
         choices = [(choice_name, choice_value) for choice_name, choice_value in request.POST.items()
                    if choice_name.startswith(f'choice_{question_name}')]
 
+        if not choices:
+            messages.error(request, 'Questions must have at least one choice')
+            return redirect('create_poll')
+
+        question.save()
         for choice_name, choice_value in choices:
             Choice(choice_text=choice_value, question_id=question.id).save()
 
