@@ -4,23 +4,17 @@ from django.core.exceptions import PermissionDenied
 from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
+from django.views.generic import TemplateView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import FormView, DeleteView
-from django.views.generic.list import ListView
-
 from free_quiz.mixins.mixins import TitleMixin
 from .forms import PollForm
 from .models import Poll, Question, Choice, Vote
 
 
-class Home(TitleMixin, ListView):
+class Home(TitleMixin, TemplateView):
     template_name = 'polls/home.html'
-    model = Poll
-    context_object_name = 'polls'
     title = 'Home'
-
-    def get_queryset(self):
-        return Poll.objects.order_by('-pub_date')[:5]
 
 
 class ShowPoll(TitleMixin, DetailView):
