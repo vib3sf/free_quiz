@@ -2,17 +2,18 @@
 {% load static %}
 {% load crispy_forms_filters %}
 {% block content %}
-    <div>
+    <div class="d-flex justify-content-center">
         <form action="{% url 'create' %}" method="POST">
             {% csrf_token %}
             {{ form | crispy }}
             <div id="question_container">
-                <button type="button" onclick="addTest()">Add question</button>
+                <button class="btn btn-outline-dark" type="button" onclick="addQuestion()">Add question</button>
             </div>
             <div>
-                <button type="submit">Apply</button>
+                <button class="btn btn-outline-dark" type="submit">Apply</button>
             </div>
             <script src="{% static 'polls/js/add_forms.js' %}"></script>
         </form>
     </div>
+    <script>addQuestion()</script>
 {% endblock content %}

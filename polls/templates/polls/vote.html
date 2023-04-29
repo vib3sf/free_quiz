@@ -1,7 +1,7 @@
 {% extends "polls/base.html" %}
 {% load crispy_forms_filters %}
 {% block content %}
-    <div>
+    <div class="h-100 d-flex justify-content-center align-items-center">
         <form action="{% url 'vote' poll.id %}" method="post">
         {% csrf_token %}
         <fieldset>

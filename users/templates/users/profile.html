@@ -1,21 +1,17 @@
 {% extends "polls/base.html" %}
 {% block content %}
-    <div>
-        <p> Username: {{ user.username }}</p>
-        <p> Email: {{ user.email }}</p>
-        <span>
-            <div>
-                <p>Created polls</p>
-                {% for poll in user_polls %}
-                    <div><a href="{{ poll.get_absolute_url }}">{{ poll }}</a></div>
-                {% endfor %}
-            </div>
-            <div>
-                <p>Completed polls</p>
-                {% for poll in completed_polls %}
-                    <div><a href="{{ poll.get_absolute_url }}">{{ poll }}</a></div>
-                {% endfor %}
-            </div>
-        </span>
+    <div class="h-100 d-flex justify-content-center align-items-center">
+        <div>
+            <p> Account: {{ user.username }}</p>
+            <p> Email: {{ user.email }}</p>
+            <p>Created polls</p>
+            {% for poll in user_polls %}
+                <a href="{{ poll.get_absolute_url }}">{{ poll }}</a>
+            {% endfor %}
+            <p>Completed polls</p>
+            {% for poll in completed_polls %}
+                <a href="{{ poll.get_absolute_url }}">{{ poll }}</a>
+            {% endfor %}
+        </div>
     </div>
 {% endblock content %}
