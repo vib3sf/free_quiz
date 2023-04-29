@@ -1,11 +1,7 @@
 {% extends "polls/base.html" %}
 {% block content %}
-    <div class="h-100 d-flex justify-content-center align-items-center">
-        <div class="h-25 text-center">
-            <h1>free_quiz!</h1>
-            <a class="link-info" href="{% url 'create_poll' %}">Make quiz!</a>
-        </div>
-    </div>
-    <div class="position-absolute top-0 start-100">
+    <div class="h-25 text-center">
+        <h1>free_quiz!</h1>
+        <a class="link-info" href="{% url 'create_poll' %}">Make quiz!</a>
     </div>
 {% endblock content %}

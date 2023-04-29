@@ -1,8 +1,7 @@
 {% extends "polls/base.html" %}
 {% load crispy_forms_filters %}
 {% block content %}
-<div class="container">
-    <div class="content-section">
+    <div>
         <h2> {{ poll }}</h2>
         <p>Poll creator: {{ poll.creator }}</p>
         <p>Publication date: {{ poll.pub_date }}</p>
@@ -29,5 +28,4 @@
             <a href="{% url 'delete' poll.id %}">Delete</a>
         {% endif %}
     </div>
-</div>
 {% endblock content %}

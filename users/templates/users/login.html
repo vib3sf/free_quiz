@@ -2,8 +2,7 @@
 {% load crispy_forms_filters %}
 {% load crispy_forms_tags %}
 {% block content %}
-    <div class="container">
-    <div class="main_menu">
+    <div>
         <form method="POST">
             {% csrf_token %}
             <fieldset class="form-group">
@@ -19,6 +18,5 @@
                 Нужен аккаунт? <a class="ml-2" href="{% url 'register' %}">Регистрация</a>
             </small>
         </div>
-    </div>
     </div>
 {% endblock content %}

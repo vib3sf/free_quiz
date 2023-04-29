@@ -1,8 +1,10 @@
 {% extends "polls/base.html" %}
 {% load crispy_forms_filters %}
 {% block content %}
-    <form action="" method="post">{% csrf_token %}
-        <p>Are you sure you want to delete "{{ object }}"?</p>
-        <input type="submit" value="Confirm" />
-    </form>
+    <div>
+        <form action="" method="post">{% csrf_token %}
+            <p>Are you sure you want to delete "{{ object }}"?</p>
+            <input type="submit" value="Confirm" />
+        </form>
+    </div>
 {% endblock content %}
