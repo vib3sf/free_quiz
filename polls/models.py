@@ -19,6 +19,11 @@ class Poll(models.Model):
     def user_can_vote(self, user):
         return self.can_revote or not self.user_completed_poll(user)
 
+    @property
+    def count_total_votes(self):
+        return Vote.objects.filter(
+            choice__question__poll=self, choice__question=Question.objects.filter(poll=self).first()).count()
+
     def __str__(self):
         return self.title
 
