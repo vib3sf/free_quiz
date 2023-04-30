@@ -29,9 +29,11 @@ class ShowPoll(TitleMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         poll = self.get_object()
+
         context.update({
             'poll_completed': poll.user_completed_poll(self.request.user),
-            'can_vote': poll.user_can_vote(self.request.user)
+            'can_vote': poll.user_can_vote(self.request.user),
+            'selected_choices': Choice.objects.filter(vote__voter=self.request.user, question__poll=poll)
         })
         return context
 

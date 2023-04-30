@@ -15,6 +15,9 @@
                         <li>
                             {{ choice }}
                             {{ choice.get_percent }}
+                            {% if choice in selected_choices %}
+                                <span><== Your choice</span>
+                            {% endif %}
                         </li>
                     {% endfor %}
                 </ol>
