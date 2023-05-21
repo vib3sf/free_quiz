@@ -19,6 +19,7 @@ class Home(TitleMixin, TemplateView):
     title = 'Home'
 
 
+@method_decorator(login_required, name='dispatch')
 class ShowPoll(TitleMixin, DetailView):
     model = Poll
     template_name = 'polls/show_poll.html'
