@@ -11,7 +11,7 @@
                 </legend>
                 {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
                 {% for choice in question.choice_set.all %}
-                    <input type="radio" name="{{ question.id }}" id="{{ choice.id }}" value="{{ choice.id }}">
+                    <input type="radio" name="{{ question.id }}" id="{{ choice.id }}" value="{{ choice.id }}" required>
                     <label for="{{ choice.id }}">{{ choice.choice_text }}</label><br>
                 {% endfor %}
             {% endfor %}
