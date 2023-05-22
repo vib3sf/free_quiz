@@ -6,7 +6,7 @@ from polls.models import Poll, Question, Choice, Vote
 class ChoiceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Choice
-        fields = ['choice_text']
+        fields = 'choice_text',
 
     def to_representation(self, instance):
         json = super().to_representation(instance)
@@ -32,7 +32,7 @@ class PollSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Poll
-        fields = ('title', 'description', 'can_revote', 'questions')
+        fields = ('id', 'title', 'description', 'can_revote', 'pub_date', 'questions')
 
     def create(self, validated_data):
         questions_data = validated_data.pop('questions')
