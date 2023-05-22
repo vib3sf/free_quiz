@@ -8,6 +8,11 @@ class ChoiceSerializer(serializers.ModelSerializer):
         model = Choice
         fields = ['choice_text']
 
+    def to_representation(self, instance):
+        json = super().to_representation(instance)
+        json['percent'] = instance.get_percent
+        return json
+
 
 class QuestionSerializer(serializers.ModelSerializer):
     choices = ChoiceSerializer(many=True, write_only=True)
