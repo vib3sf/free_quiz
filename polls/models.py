@@ -6,7 +6,7 @@ from django.urls import reverse
 class Poll(models.Model):
     title = models.CharField(max_length=200)
     description = models.TextField(blank=True)
-    creator = models.ForeignKey(User, on_delete=models.CASCADE)
+    creator = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     pub_date = models.DateTimeField(auto_now_add=True)
     can_revote = models.BooleanField()
 
@@ -51,7 +51,7 @@ class Choice(models.Model):
 
 class Vote(models.Model):
     choice = models.ForeignKey(Choice, on_delete=models.CASCADE)
-    voter = models.ForeignKey(User, on_delete=models.CASCADE)
+    voter = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
         return f'{self.voter.username} - {self.choice.choice_text}'
