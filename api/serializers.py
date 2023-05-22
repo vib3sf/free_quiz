@@ -16,6 +16,11 @@ class QuestionSerializer(serializers.ModelSerializer):
         model = Question
         fields = ('question_text', 'choices')
 
+    def to_representation(self, instance):
+        json = super().to_representation(instance)
+        json['choices'] = ChoiceSerializer(instance.choice_set.all(), many=True).data
+        return json
+
 
 class PollSerializer(serializers.ModelSerializer):
     questions = QuestionSerializer(many=True, write_only=True)
@@ -33,3 +38,8 @@ class PollSerializer(serializers.ModelSerializer):
             for choice_data in choices_data:
                 Choice.objects.create(question=question, **choice_data)
         return poll
+
+    def to_representation(self, instance):
+        json = super().to_representation(instance)
+        json['questions'] = QuestionSerializer(instance.question_set.all(), many=True).data
+        return json
