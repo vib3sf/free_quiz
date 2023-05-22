@@ -29,10 +29,11 @@ class QuestionSerializer(serializers.ModelSerializer):
 
 class PollSerializer(serializers.ModelSerializer):
     questions = QuestionSerializer(many=True, write_only=True)
+    creator = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
     class Meta:
         model = Poll
-        fields = ('id', 'title', 'description', 'can_revote', 'pub_date', 'questions')
+        fields = '__all__'
 
     def create(self, validated_data):
         questions_data = validated_data.pop('questions')
