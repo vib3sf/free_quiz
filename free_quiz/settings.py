@@ -84,9 +84,13 @@ WSGI_APPLICATION = 'free_quiz.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'free_quiz_db',
+            'USER': 'free_quiz_user',
+            'PASSWORD': 'jtch01B',
+            'HOST': 'localhost',
+            'PORT': '',
+        }
 }
 
 
