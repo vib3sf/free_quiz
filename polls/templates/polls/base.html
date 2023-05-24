@@ -16,14 +16,14 @@
             </li>
             {% if user.is_authenticated %}
                 <li class="nav-item active">
-                    <a class="nav-item nav-link" href="{% url 'logout' %}">Logout</a>
+                    <a class="nav-item nav-link" href="{% url 'view_logout' %}">Logout</a>
                 </li>
                 <li class="nav-item active">
                     <a class="nav-item nav-link" href="{% url 'profile'  %}">Profile</a>
                 </li>
             {% else %}
                 <li class="nav-item active">
-                    <a class="nav-item nav-link" href="{% url 'login' %}">Login</a>
+                    <a class="nav-item nav-link" href="{% url 'view_login' %}">Login</a>
                 </li>
                 <li class="nav-item active">
                     <a class="nav-item nav-link" href="{% url 'register' %}">Register</a>
