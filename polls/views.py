@@ -57,6 +57,7 @@ def create(request):
 
     if not questions:
         messages.error(request, 'Poll must have at least on question')
+        poll.delete()
         return redirect('create_poll')
 
     for question_name, question_value in questions:
@@ -67,6 +68,7 @@ def create(request):
 
         if not choices:
             messages.error(request, 'Questions must have at least one choice')
+            poll.delete()
             return redirect('create_poll')
 
         question.save()

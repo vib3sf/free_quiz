@@ -13,7 +13,7 @@ from .forms import UserRegisterForm
 class Register(CreateView):
     form_class = UserRegisterForm
     template_name = 'users/register.html'
-    success_url = reverse_lazy('login')
+    success_url = reverse_lazy('view_login')
 
 
 class Login(TitleMixin, LoginView):
