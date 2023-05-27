@@ -48,6 +48,7 @@ class PollSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         json = super().to_representation(instance)
         json['questions'] = QuestionSerializer(instance.question_set.all(), many=True).data
+        json['total_votes'] = instance.count_total_votes
         return json
 
 

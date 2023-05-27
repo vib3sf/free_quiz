@@ -18,7 +18,7 @@ class PollDeleteAPIView(generics.DestroyAPIView):
     permission_classes = (IsPollCreator, )
 
 
-class VoteListCreateAPIVIew(generics.ListCreateAPIView):
+class VoteCreateAPIVIew(generics.CreateAPIView):
     queryset = Vote.objects.all()
     serializer_class = VoteSerializer
     permission_classes = (IsPollCreator, )
