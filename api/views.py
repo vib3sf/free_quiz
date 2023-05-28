@@ -7,12 +7,12 @@ from polls.models import Poll, Vote
 
 
 class PollListCreateAPIView(generics.ListCreateAPIView):
-    queryset = Poll.objects.all()
     serializer_class = PollSerializer
     permission_classes = (IsAuthenticated, )
 
     def get_queryset(self):
-        return Poll.objects.filter(creator=self.request.user)
+        return Poll.objects.filter(creator=self.request.user) if 'poll_id' not in self.kwargs \
+            else Poll.objects.filter(id=self.kwargs['poll_id'])
 
 
 class PollDeleteAPIView(generics.DestroyAPIView):
