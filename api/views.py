@@ -1,5 +1,5 @@
 from rest_framework import generics
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAuthenticated
 
 from api.permissions import IsPollCreator
 from api.serializers import PollSerializer, VoteSerializer
@@ -9,7 +9,10 @@ from polls.models import Poll, Vote
 class PollListCreateAPIView(generics.ListCreateAPIView):
     queryset = Poll.objects.all()
     serializer_class = PollSerializer
-    permission_classes = (IsAuthenticatedOrReadOnly, )
+    permission_classes = (IsAuthenticated, )
+
+    def get_queryset(self):
+        return Poll.objects.filter(creator=self.request.user)
 
 
 class PollDeleteAPIView(generics.DestroyAPIView):
