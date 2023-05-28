@@ -12,7 +12,7 @@ class PollListCreateAPIView(generics.ListCreateAPIView):
 
     def get_queryset(self):
         return Poll.objects.filter(creator=self.request.user) if 'poll_id' not in self.kwargs \
-            else Poll.objects.filter(id=self.kwargs['poll_id'])
+            else Poll.objects.filter(id=self.kwargs['poll_id'], creator=self.request.user)
 
 
 class PollDeleteAPIView(generics.DestroyAPIView):
