@@ -57,3 +57,6 @@ class VoteSerializer(serializers.ModelSerializer):
         model = Vote
         fields = ('choice', )
 
+
+class VoteListSerializer(serializers.ListSerializer):
+    child = VoteSerializer()
