@@ -2,7 +2,11 @@ from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 
 from api.permissions import IsPollCreator
+<<<<<<< HEAD
 from api.serializers import PollSerializer, VoteListSerializer
+=======
+from api.serializers import PollSerializer, VoteSerializer, VoteListSerializer
+>>>>>>> refs/remotes/origin/master
 from polls.models import Poll, Vote
 
 
